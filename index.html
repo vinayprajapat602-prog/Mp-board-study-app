@@ -1,0 +1,1809 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta name="theme-color" content="#1d4ed8">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <link rel="manifest" href="manifest.webmanifest">
+    <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>MP बोर्ड 12वीं - डेली रूटीन, सिलेबस, अलार्म और KBC क्विज़</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;500;600;700;800&family=Rajdhani:wght@600;700&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kbcNavy: '#070b24',
+                        kbcCard: '#101847',
+                        kbcGold: '#ffd700',
+                        kbcAmber: '#f59e0b',
+                    },
+                    fontFamily: {
+                        hindi: ['"Noto Sans Devanagari"', 'sans-serif'],
+                        rajdhani: ['Rajdhani', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            background: radial-gradient(circle at top center, #1b2770 0%, #090d2e 55%, #040614 100%);
+            min-height: 100vh;
+            color: #ffffff;
+            padding-bottom: 84px; /* Space for fixed Instagram-style bottom bar */
+            overflow-x: hidden;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .royal-panel {
+            background: linear-gradient(180deg, rgba(22, 33, 99, 0.95) 0%, rgba(10, 15, 56, 0.98) 100%);
+            border: 1.5px solid rgba(212, 175, 55, 0.55);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.45), inset 0 0 15px rgba(59, 130, 246, 0.15);
+        }
+
+        .gold-gradient-text {
+            background: linear-gradient(180deg, #fff8c4 0%, #ffd700 55%, #d99b00 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Classic KBC Hexagonal Option Buttons */
+        .kbc-option {
+            position: relative;
+            background: linear-gradient(180deg, #182369 0%, #0b103b 100%);
+            border: 2px solid #4f83f1;
+            clip-path: polygon(14px 0%, calc(100% - 14px) 0%, 100% 50%, calc(100% - 14px) 100%, 14px 100%, 0% 50%);
+            transition: all 0.2s ease;
+        }
+
+        .kbc-option:hover:not(:disabled) {
+            background: linear-gradient(180deg, #b8860b 0%, #785500 100%);
+            border-color: #ffd700;
+        }
+
+        .kbc-option.locked {
+            background: linear-gradient(180deg, #d97706 0%, #92400e 100%) !important;
+            border-color: #fde047 !important;
+        }
+
+        .kbc-option.correct {
+            background: linear-gradient(180deg, #16a34a 0%, #064e3b 100%) !important;
+            border-color: #4ade80 !important;
+            animation: pulse-green 0.45s ease 2;
+        }
+
+        .kbc-option.wrong {
+            background: linear-gradient(180deg, #dc2626 0%, #7f1d1d 100%) !important;
+            border-color: #f87171 !important;
+            animation: shake-x 0.35s ease;
+        }
+
+        .kbc-question-box {
+            background: linear-gradient(180deg, #172266 0%, #0a0e36 100%);
+            border-top: 2px solid #ffd700;
+            border-bottom: 2px solid #ffd700;
+            border-left: 3px solid #60a5fa;
+            border-right: 3px solid #60a5fa;
+            box-shadow: 0 0 24px rgba(255, 215, 0, 0.18);
+        }
+
+        /* Smooth Slide Transitions */
+        .app-slide {
+            animation: fadeSlideIn 0.28s ease-out;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes pulse-green {
+            0%, 100% { filter: brightness(1); }
+            50% { filter: brightness(1.4); }
+        }
+
+        @keyframes shake-x {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-6px); }
+            75% { transform: translateX(6px); }
+        }
+
+        /* Hide horizontal scrollbar on day pills */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body>
+
+    <!-- ===================================================================== -->
+    <!-- TOP COMPACT HEADER (CLOCK, TODAY'S DAY & SOUND STATUS)                -->
+    <!-- ===================================================================== -->
+    <header class="sticky top-0 z-30 bg-kbcNavy/95 backdrop-blur-md border-b border-yellow-500/40 px-3 py-2.5 shadow-lg">
+        <div class="max-w-4xl mx-auto flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+                <div class="w-9 h-9 rounded-xl border border-yellow-400 bg-gradient-to-br from-indigo-900 to-blue-950 flex items-center justify-center shadow">
+                    <span class="font-rajdhani font-bold text-base text-yellow-300">12th</span>
+                </div>
+                <div>
+                    <h1 class="font-bold text-sm sm:text-base gold-gradient-text leading-tight">MP बोर्ड स्टडी रूटीन & KBC</h1>
+                    <p id="header-today-badge" class="text-[11px] text-blue-300 font-medium">आज: सोमवार</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <div class="bg-blue-950/90 border border-yellow-500/40 px-2.5 py-1 rounded-lg">
+                    <span id="header-live-clock" class="font-rajdhani font-bold text-sm sm:text-base text-yellow-300 tracking-wider">00:00:00</span>
+                </div>
+                <button onclick="toggleGlobalSound()" id="sound-btn" title="साउंड चालू/बंद" class="w-9 h-9 rounded-full bg-blue-900/80 border border-yellow-400/50 text-yellow-300 flex items-center justify-center cursor-pointer active:scale-95">
+                    <i class="fa-solid fa-volume-high text-sm"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ===================================================================== -->
+    <!-- MAIN SLIDES CONTAINER                                                 -->
+    <!-- ===================================================================== -->
+    <main class="max-w-4xl mx-auto px-3 pt-4">
+
+        <!-- ================================================================= -->
+        <!-- SLIDE 1: डेली रूटीन, दिन-वार टाइम-टेबल और सिलेबस ट्रैकर          -->
+        <!-- ================================================================= -->
+        <section id="slide-routine" class="app-slide space-y-4">
+            
+            <!-- Top Sub-Switch: Daily Time-Table vs Syllabus Progress -->
+            <div class="grid grid-cols-2 gap-2 bg-blue-950/90 p-1.5 rounded-2xl border border-blue-500/40">
+                <button onclick="switchRoutineSubView('timetable')" id="subtab-timetable" class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-yellow-500 to-amber-500 text-black shadow transition cursor-pointer">
+                    <i class="fa-solid fa-clock mr-1.5"></i> डेली टाइम-टेबल (कॉपी वर्क)
+                </button>
+                <button onclick="switchRoutineSubView('syllabus')" id="subtab-syllabus" class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-blue-200 hover:bg-blue-900/60 transition cursor-pointer">
+                    <i class="fa-solid fa-list-check mr-1.5"></i> सिलेबस प्रगति (टिक करें)
+                </button>
+            </div>
+
+            <!-- SUB-VIEW 1A: DAY-WISE CUSTOM TIMETABLE & COPY WORK CHECKOFF -->
+            <div id="view-timetable" class="space-y-4">
+                
+                <!-- Monday to Sunday Selector Strip -->
+                <div class="royal-panel rounded-2xl p-3">
+                    <div class="flex items-center justify-between mb-2 px-1">
+                        <span class="text-xs font-bold text-yellow-300"><i class="fa-solid fa-calendar-week mr-1"></i> दिन चुनें (हर दिन का अलग टाइम बनाएं):</span>
+                        <button onclick="resetTodayTicks()" class="text-[11px] text-blue-300 hover:text-yellow-300 underline cursor-pointer">आज के टिक रीसेट करें</button>
+                    </div>
+                    <div id="day-selector-strip" class="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
+                        <!-- Rendered dynamically for Mon-Sun -->
+                    </div>
+                </div>
+
+                <!-- Daily Progress Summary Card -->
+                <div class="royal-panel rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div class="flex-1">
+                        <div class="flex justify-between items-center mb-1">
+                            <h2 id="selected-day-heading" class="font-bold text-base sm:text-lg text-white">सोमवार का पढ़ाई रूटीन</h2>
+                            <span id="daily-progress-text" class="text-xs font-bold text-green-400">0% पूर्ण</span>
+                        </div>
+                        <div class="w-full bg-blue-950 h-2.5 rounded-full overflow-hidden border border-blue-500/30">
+                            <div id="daily-progress-bar" class="bg-gradient-to-r from-green-500 to-emerald-400 h-full transition-all duration-300" style="width: 0%"></div>
+                        </div>
+                        <p class="text-[11px] text-blue-200 mt-1.5">जो टॉपिक कॉपी या किताब से पढ़ लें, उसके सामने टिक (✓) लगाएँ।</p>
+                    </div>
+                    <button onclick="toggleAddSlotForm()" class="px-4 py-2.5 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-bold text-xs sm:text-sm shadow hover:brightness-110 cursor-pointer shrink-0">
+                        <i class="fa-solid fa-plus mr-1"></i> नया टाइम जोड़ें
+                    </button>
+                </div>
+
+                <!-- Add New Study Slot Form (Collapsible) -->
+                <form id="add-slot-form" onsubmit="saveDayTimeSlot(event)" class="hidden royal-panel rounded-2xl p-4 space-y-3 border-yellow-400">
+                    <div class="flex justify-between items-center border-b border-blue-800 pb-2">
+                        <h3 class="text-sm font-bold text-yellow-300" id="form-day-title">सोमवार के लिए नया पढ़ने का समय जोड़ें</h3>
+                        <button type="button" onclick="toggleAddSlotForm()" class="text-gray-400 hover:text-white text-lg cursor-pointer">&times;</button>
+                    </div>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                        <div>
+                            <label class="block text-[11px] text-blue-200 mb-1">शुरू समय (Start):</label>
+                            <input type="time" id="slot-start" required class="w-full bg-kbcNavy border border-blue-500 rounded-xl p-2 text-sm text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-blue-200 mb-1">समाप्त समय (End):</label>
+                            <input type="time" id="slot-end" required class="w-full bg-kbcNavy border border-blue-500 rounded-xl p-2 text-sm text-white">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-blue-200 mb-1">विषय (Subject):</label>
+                            <select id="slot-subject" class="w-full bg-kbcNavy border border-blue-500 rounded-xl p-2 text-sm text-white">
+                                <option value="भौतिक विज्ञान (Physics)">भौतिक विज्ञान (Physics)</option>
+                                <option value="रसायन विज्ञान (Chemistry)">रसायन विज्ञान (Chemistry)</option>
+                                <option value="गणित (Maths)">गणित (Maths)</option>
+                                <option value="हिंदी / अंग्रेजी">हिंदी / अंग्रेजी</option>
+                                <option value="KBC MCQ टेस्ट">KBC MCQ टेस्ट</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-[11px] text-blue-200 mb-1">पढ़ाई का तरीका:</label>
+                            <select id="slot-type" class="w-full bg-kbcNavy border border-blue-500 rounded-xl p-2 text-sm text-white">
+                                <option value="📒 कॉपी से पढ़ाई / नोट्स">📒 कॉपी से पढ़ाई / नोट्स</option>
+                                <option value="📖 किताब / अध्याय रिविज़न">📖 किताब / अध्याय रिविज़न</option>
+                                <option value="✍️ सवाल हल करना (Practice)">✍️ सवाल हल करना</option>
+                                <option value="🏆 KBC MCQ प्रैक्टिस">🏆 KBC MCQ प्रैक्टिस</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] text-blue-200 mb-1">आज कॉपी या अध्याय में क्या पढ़ना है? (विवरण लिखें):</label>
+                        <input type="text" id="slot-note" required placeholder="उदाहरण: कॉपी से अध्याय 2 के सभी डेरिवेशन और न्यूमेरिकल याद करना" class="w-full bg-kbcNavy border border-blue-500 rounded-xl p-2.5 text-sm text-white">
+                    </div>
+
+                    <div class="flex flex-wrap gap-2 pt-1">
+                        <button type="submit" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-sm shadow cursor-pointer">
+                            <i class="fa-solid fa-check mr-1"></i> इस दिन के टाइम-टेबल में सेव करें
+                        </button>
+                        <button type="button" onclick="copyScheduleToAllDays()" class="px-3 py-2.5 rounded-xl bg-blue-900 border border-blue-400 text-xs font-semibold text-blue-100 hover:bg-blue-800 cursor-pointer">
+                            सभी 7 दिनों में कॉपी करें
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Selected Day Schedule Cards List -->
+                <div id="day-schedule-list" class="space-y-2.5">
+                    <!-- Rendered dynamically -->
+                </div>
+            </div>
+
+            <!-- SUB-VIEW 1B: MP BOARD CLASS 12 PCM SYLLABUS CHECKLIST TRACKER -->
+            <div id="view-syllabus" class="hidden space-y-4">
+                
+                <!-- Overall Syllabus Completion Meter -->
+                <div class="royal-panel rounded-2xl p-4">
+                    <div class="flex justify-between items-center mb-1.5">
+                        <h2 class="font-bold text-base sm:text-lg gold-gradient-text"><i class="fa-solid fa-graduation-cap mr-1.5"></i>MP बोर्ड 12वीं कुल सिलेबस प्रगति</h2>
+                        <span id="syllabus-overall-pct" class="font-rajdhani font-bold text-xl text-green-400">0%</span>
+                    </div>
+                    <div class="w-full bg-blue-950 h-3 rounded-full overflow-hidden border border-yellow-500/30">
+                        <div id="syllabus-overall-bar" class="bg-gradient-to-r from-yellow-400 via-amber-400 to-green-400 h-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p id="syllabus-overall-count" class="text-xs text-blue-200 mt-1.5">कुल 37 अध्यायों में से 0 अध्याय पूर्ण हुए। (जो अध्याय कॉपी/किताब से पूरा हो जाए उस पर टिक लगाएँ)</p>
+                </div>
+
+                <!-- Subject Filter Pills for Syllabus -->
+                <div class="flex gap-2">
+                    <button onclick="renderSyllabusList('physics')" id="syl-btn-physics" class="syl-sub-btn flex-1 py-2 rounded-xl font-bold text-xs bg-yellow-500 text-black cursor-pointer">भौतिकी (14)</button>
+                    <button onclick="renderSyllabusList('chemistry')" id="syl-btn-chemistry" class="syl-sub-btn flex-1 py-2 rounded-xl font-bold text-xs bg-blue-950 border border-blue-500/40 text-blue-200 cursor-pointer">रसायन (10)</button>
+                    <button onclick="renderSyllabusList('maths')" id="syl-btn-maths" class="syl-sub-btn flex-1 py-2 rounded-xl font-bold text-xs bg-blue-950 border border-blue-500/40 text-blue-200 cursor-pointer">गणित (13)</button>
+                </div>
+
+                <!-- Chapters Checklist Container -->
+                <div id="syllabus-chapters-container" class="royal-panel rounded-2xl p-3 sm:p-4 space-y-2">
+                    <!-- Chapters with checkboxes rendered dynamically -->
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SLIDE 2: KBC प्रैक्टिस (बिना धनराशि तालिका के शुद्ध KBC क्विज़)      -->
+        <!-- ================================================================= -->
+        <section id="slide-quiz" class="hidden app-slide space-y-4">
+            
+            <!-- 2A. Quiz Setup Screen -->
+            <div id="quiz-setup" class="royal-panel rounded-2xl p-5 sm:p-7 text-center max-w-2xl mx-auto">
+                <div class="w-16 h-16 mx-auto mb-3 rounded-full border-2 border-yellow-400 bg-indigo-950 flex items-center justify-center text-3xl shadow-[0_0_20px_rgba(255,215,0,0.35)]">
+                    🎯
+                </div>
+                <h2 class="text-xl sm:text-2xl font-bold gold-gradient-text mb-1">KBC बोर्ड परीक्षा प्रैक्टिस</h2>
+                <p class="text-xs sm:text-sm text-blue-200 mb-5">अपना विषय और अध्याय चुनें — 25 से 30 महत्वपूर्ण बोर्ड MCQs हल करें!</p>
+
+                <div class="space-y-3.5 text-left mb-6">
+                    <div>
+                        <label class="block text-xs font-bold text-yellow-300 mb-1">1. विषय चुनें (Subject):</label>
+                        <select id="quiz-subject-select" onchange="populateQuizChapters()" class="w-full bg-kbcNavy border-2 border-blue-500/70 rounded-xl p-3 text-sm text-white font-semibold focus:border-yellow-400 focus:outline-none">
+                            <option value="physics">भौतिक विज्ञान (Physics - सभी 14 अध्याय)</option>
+                            <option value="chemistry">रसायन विज्ञान (Chemistry - सभी 10 अध्याय)</option>
+                            <option value="maths">गणित (Mathematics - सभी 13 अध्याय)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-yellow-300 mb-1">2. अध्याय चुनें (Chapter):</label>
+                        <select id="quiz-chapter-select" onchange="updateQuizChapterInfo()" class="w-full bg-kbcNavy border-2 border-blue-500/70 rounded-xl p-3 text-sm text-white font-semibold focus:border-yellow-400 focus:outline-none">
+                        </select>
+                        <p id="quiz-chapter-info" class="text-[11px] text-green-400 mt-1 font-medium"></p>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-yellow-300 mb-1">3. प्रश्नों की संख्या चुनें:</label>
+                        <select id="quiz-count-select" class="w-full bg-kbcNavy border-2 border-blue-500/70 rounded-xl p-3 text-sm text-white font-semibold focus:border-yellow-400 focus:outline-none">
+                            <option value="25">25 प्रश्न (फुल चैप्टर टेस्ट)</option>
+                            <option value="30">30 प्रश्न (मेगा बोर्ड टेस्ट)</option>
+                            <option value="15">15 प्रश्न (त्वरित रिविज़न)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-2.5">
+                    <button onclick="startKBCQuiz()" class="flex-1 py-3.5 px-5 rounded-xl font-bold text-base bg-gradient-to-r from-yellow-500 via-amber-400 to-yellow-500 text-black shadow-lg hover:brightness-110 active:scale-95 transition cursor-pointer">
+                        <i class="fa-solid fa-play mr-1.5"></i> क्विज़ शुरू करें
+                    </button>
+                    <button onclick="openCustomQModal()" class="py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm bg-blue-900/90 border border-blue-400 text-blue-100 hover:bg-blue-800 transition cursor-pointer">
+                        <i class="fa-solid fa-plus mr-1"></i> नया प्रश्न जोड़ें
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2B. Active KBC Gameplay (Clean Full-Width Layout - NO Prize Money Ladder) -->
+            <div id="quiz-arena" class="hidden max-w-3xl mx-auto space-y-4">
+                
+                <!-- Top Subject, Chapter & Lifelines Bar -->
+                <div class="royal-panel rounded-2xl p-3.5 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                        <span id="arena-subject-badge" class="text-[11px] font-bold px-2.5 py-0.5 rounded bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">भौतिक विज्ञान</span>
+                        <h3 id="arena-chapter-title" class="text-xs sm:text-sm font-bold text-white mt-1">अध्याय 1</h3>
+                    </div>
+
+                    <!-- 3 Classic KBC Lifelines -->
+                    <div class="flex items-center gap-1.5 sm:gap-2">
+                        <button id="life-5050" onclick="useLifeline5050()" class="px-3 py-1.5 rounded-full border-2 border-yellow-400 bg-blue-950 text-yellow-300 font-bold text-xs hover:bg-yellow-500 hover:text-black transition cursor-pointer">
+                            50:50
+                        </button>
+                        <button id="life-poll" onclick="useLifelinePoll()" class="px-3 py-1.5 rounded-full border-2 border-yellow-400 bg-blue-950 text-yellow-300 font-bold text-xs hover:bg-yellow-500 hover:text-black transition cursor-pointer">
+                            <i class="fa-solid fa-users"></i> पोल
+                        </button>
+                        <button id="life-flip" onclick="useLifelineFlip()" class="px-3 py-1.5 rounded-full border-2 border-yellow-400 bg-blue-950 text-yellow-300 font-bold text-xs hover:bg-yellow-500 hover:text-black transition cursor-pointer">
+                            <i class="fa-solid fa-rotate"></i> बदलें
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Question Counter, 30s Clock & Score -->
+                <div class="flex items-center justify-between px-2">
+                    <div class="bg-blue-950/90 border border-blue-500/40 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold text-blue-200">
+                        प्रश्न: <span id="q-num-current" class="text-yellow-400 text-base">1</span> / <span id="q-num-total">25</span>
+                    </div>
+
+                    <!-- Circular 30s Timer -->
+                    <div id="kbc-timer-ring" class="w-14 h-14 rounded-full border-4 border-yellow-400 bg-kbcNavy flex items-center justify-center shadow-[0_0_16px_rgba(255,215,0,0.45)]">
+                        <span id="kbc-timer-text" class="font-rajdhani font-bold text-2xl text-yellow-300">30</span>
+                    </div>
+
+                    <div class="bg-blue-950/90 border border-green-500/40 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold text-green-400">
+                        सही: <span id="q-score-correct" class="text-base">0</span>
+                    </div>
+                </div>
+
+                <!-- Audience Poll Box -->
+                <div id="audience-poll-box" class="hidden royal-panel rounded-xl p-3 border-yellow-400">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-xs font-bold text-yellow-300"><i class="fa-solid fa-chart-simple mr-1"></i> ऑडियंस पोल परिणाम:</span>
+                        <button onclick="document.getElementById('audience-poll-box').classList.add('hidden')" class="text-xs text-gray-300 hover:text-white cursor-pointer">✕</button>
+                    </div>
+                    <div id="audience-poll-bars" class="grid grid-cols-4 gap-2 text-center text-xs font-bold"></div>
+                </div>
+
+                <!-- Question Box -->
+                <div class="kbc-question-box rounded-2xl p-5 sm:p-7 text-center min-h-[120px] flex items-center justify-center">
+                    <p id="arena-question-text" class="text-base sm:text-xl font-bold text-white leading-relaxed"></p>
+                </div>
+
+                <!-- 4 Hexagonal Options -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button id="opt-btn-A" onclick="handleOptionClick('A')" class="kbc-option py-3.5 px-6 text-left flex items-center gap-3 cursor-pointer">
+                        <span class="text-yellow-400 font-bold text-lg">A:</span>
+                        <span id="opt-text-A" class="font-semibold text-sm sm:text-base text-white"></span>
+                    </button>
+                    <button id="opt-btn-B" onclick="handleOptionClick('B')" class="kbc-option py-3.5 px-6 text-left flex items-center gap-3 cursor-pointer">
+                        <span class="text-yellow-400 font-bold text-lg">B:</span>
+                        <span id="opt-text-B" class="font-semibold text-sm sm:text-base text-white"></span>
+                    </button>
+                    <button id="opt-btn-C" onclick="handleOptionClick('C')" class="kbc-option py-3.5 px-6 text-left flex items-center gap-3 cursor-pointer">
+                        <span class="text-yellow-400 font-bold text-lg">C:</span>
+                        <span id="opt-text-C" class="font-semibold text-sm sm:text-base text-white"></span>
+                    </button>
+                    <button id="opt-btn-D" onclick="handleOptionClick('D')" class="kbc-option py-3.5 px-6 text-left flex items-center gap-3 cursor-pointer">
+                        <span class="text-yellow-400 font-bold text-lg">D:</span>
+                        <span id="opt-text-D" class="font-semibold text-sm sm:text-base text-white"></span>
+                    </button>
+                </div>
+
+                <!-- Instant Explanation & Next Button -->
+                <div id="arena-feedback-box" class="hidden royal-panel rounded-2xl p-4 border-l-4 border-yellow-400">
+                    <div class="flex items-start gap-3">
+                        <i id="arena-feedback-icon" class="fa-solid fa-circle-check text-2xl text-green-400 mt-0.5"></i>
+                        <div class="flex-1">
+                            <h4 id="arena-feedback-title" class="font-bold text-sm sm:text-base text-green-400">सही जवाब!</h4>
+                            <p id="arena-feedback-exp" class="text-xs sm:text-sm text-blue-100 mt-1 leading-relaxed"></p>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex justify-between items-center">
+                        <button onclick="endKBCQuiz()" class="text-xs text-red-300 hover:text-red-200 underline cursor-pointer">टेस्ट समाप्त करें</button>
+                        <button onclick="nextKBCQuestion()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-bold text-sm shadow hover:brightness-110 cursor-pointer">
+                            अगला प्रश्न <i class="fa-solid fa-arrow-right ml-1"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2C. Quiz Result Summary Screen (Score & Accuracy Only - No Money) -->
+            <div id="quiz-result" class="hidden royal-panel rounded-2xl p-6 sm:p-8 text-center max-w-xl mx-auto">
+                <div class="text-5xl mb-3">🏆</div>
+                <h2 class="text-2xl font-bold gold-gradient-text mb-1">प्रैक्टिस टेस्ट पूर्ण हुआ!</h2>
+                <p id="result-chapter-label" class="text-xs sm:text-sm text-blue-300 mb-5"></p>
+
+                <div class="bg-kbcNavy/90 border border-yellow-500/40 rounded-2xl p-5 mb-6 space-y-2">
+                    <div class="text-xs text-blue-200">आपका कुल स्कोर (Score):</div>
+                    <div class="text-3xl sm:text-4xl font-bold text-yellow-400 font-rajdhani">
+                        <span id="res-correct">0</span> / <span id="res-total">25</span>
+                    </div>
+                    <div class="text-sm font-bold text-green-400">
+                        सटीकता (Accuracy): <span id="res-accuracy">0%</span>
+                    </div>
+                    <p id="res-message" class="text-xs text-blue-100 pt-2 border-t border-blue-800/80"></p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <button onclick="startKBCQuiz()" class="flex-1 py-3 rounded-xl font-bold text-sm bg-blue-600 hover:bg-blue-500 text-white transition cursor-pointer">
+                        <i class="fa-solid fa-rotate-right mr-1"></i> फिर से प्रैक्टिस करें
+                    </button>
+                    <button onclick="returnToQuizSetup()" class="flex-1 py-3 rounded-xl font-bold text-sm bg-gradient-to-r from-yellow-500 to-amber-500 text-black transition cursor-pointer">
+                        <i class="fa-solid fa-book-open mr-1"></i> दूसरा अध्याय चुनें
+                    </button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ================================================================= -->
+        <!-- SLIDE 3: तेज़ अलार्म सिस्टम (LOUD STUDY ALARM SYSTEM)              -->
+        <!-- ================================================================= -->
+        <section id="slide-alarm" class="hidden app-slide max-w-2xl mx-auto space-y-4">
+            <div class="royal-panel rounded-2xl p-5 sm:p-6 text-center">
+                <h2 class="text-xl sm:text-2xl font-bold gold-gradient-text mb-1"><i class="fa-solid fa-bell mr-1.5"></i>तेज़ पढ़ाई अलार्म (Loud Alarm)</h2>
+                <p class="text-xs text-blue-200 mb-4">पढ़ाई का समय याद दिलाने के लिए अलार्म लगाएँ। इसकी आवाज़ तेज़ सायरन/घंटी जैसी है!</p>
+
+                <!-- Big Live Digital Clock -->
+                <div class="bg-kbcNavy border-2 border-yellow-400/70 rounded-2xl py-3.5 px-6 inline-block mb-5 shadow-[0_0_20px_rgba(255,215,0,0.2)]">
+                    <div id="alarm-slide-clock" class="font-rajdhani font-bold text-4xl sm:text-5xl text-yellow-300 tracking-widest">00:00:00</div>
+                    <div id="alarm-slide-date" class="text-xs text-blue-300 mt-1">आज की तारीख</div>
+                </div>
+
+                <!-- Create Loud Alarm Form -->
+                <form onsubmit="createNewAlarm(event)" class="bg-kbcNavy/85 p-4 rounded-2xl border border-blue-500/40 space-y-3 text-left mb-5">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-bold text-yellow-300 mb-1">अलार्म का समय (Time):</label>
+                            <input type="time" id="new-alarm-time" required class="w-full bg-blue-950 border border-blue-400 rounded-xl p-2.5 text-white font-bold text-base">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-yellow-300 mb-1">किस दिन बजाना है?</label>
+                            <select id="new-alarm-day" class="w-full bg-blue-950 border border-blue-400 rounded-xl p-2.5 text-white text-sm font-semibold">
+                                <option value="ALL">रोज़ाना (सभी 7 दिन)</option>
+                                <option value="सोमवार">केवल सोमवार</option>
+                                <option value="मंगलवार">केवल मंगलवार</option>
+                                <option value="बुधवार">केवल बुधवार</option>
+                                <option value="गुरुवार">केवल गुरुवार</option>
+                                <option value="शुक्रवार">केवल शुक्रवार</option>
+                                <option value="शनिवार">केवल शनिवार</option>
+                                <option value="रविवार">केवल रविवार</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-yellow-300 mb-1">पढ़ाई रिमाइंडर संदेश:</label>
+                        <input type="text" id="new-alarm-label" required value="पढ़ाई शुरू करने का समय हो गया है! कॉपी खोलें।" class="w-full bg-blue-950 border border-blue-400 rounded-xl p-2.5 text-white text-sm">
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row gap-2.5 pt-1">
+                        <button type="submit" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-bold text-sm shadow hover:brightness-110 cursor-pointer">
+                            <i class="fa-solid fa-plus mr-1"></i> अलार्म सेट करें
+                        </button>
+                        <button type="button" onclick="testLoudAlarm()" class="py-3 px-4 rounded-xl bg-red-600/90 hover:bg-red-500 text-white font-bold text-xs sm:text-sm shadow cursor-pointer">
+                            <i class="fa-solid fa-volume-high mr-1"></i> तेज़ आवाज़ चेक करें
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Active Alarms List -->
+                <div class="text-left">
+                    <h3 class="text-xs font-bold text-yellow-300 mb-2 uppercase tracking-wider">आपके सेट किए गए अलार्म:</h3>
+                    <div id="saved-alarms-list" class="space-y-2.5"></div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- ===================================================================== -->
+    <!-- INSTAGRAM-STYLE FIXED BOTTOM NAVIGATION BAR (3 DISTINCT SLIDES)       -->
+    <!-- ===================================================================== -->
+    <nav class="fixed bottom-0 left-0 right-0 z-40 bg-kbcNavy/95 backdrop-blur-lg border-t-2 border-yellow-500/50 shadow-[0_-6px_25px_rgba(0,0,0,0.7)]">
+        <div class="max-w-4xl mx-auto grid grid-cols-3 h-16">
+            
+            <!-- Slide 1 Tab: Daily Routine & Syllabus -->
+            <button onclick="switchMainSlide('routine')" id="nav-slide-routine" class="flex flex-col items-center justify-center gap-1 text-yellow-400 border-t-2 border-yellow-400 bg-blue-950/60 transition cursor-pointer">
+                <i class="fa-solid fa-calendar-check text-lg"></i>
+                <span class="text-[11px] font-bold">डेली रूटीन</span>
+            </button>
+
+            <!-- Slide 2 Tab: KBC MCQ Practice -->
+            <button onclick="switchMainSlide('quiz')" id="nav-slide-quiz" class="flex flex-col items-center justify-center gap-1 text-blue-300 hover:text-white border-t-2 border-transparent transition cursor-pointer">
+                <i class="fa-solid fa-trophy text-lg"></i>
+                <span class="text-[11px] font-bold">KBC प्रैक्टिस</span>
+            </button>
+
+            <!-- Slide 3 Tab: Loud Study Alarm -->
+            <button onclick="switchMainSlide('alarm')" id="nav-slide-alarm" class="flex flex-col items-center justify-center gap-1 text-blue-300 hover:text-white border-t-2 border-transparent transition cursor-pointer relative">
+                <i class="fa-solid fa-bell text-lg"></i>
+                <span class="text-[11px] font-bold">अलार्म</span>
+                <span id="nav-alarm-indicator" class="hidden absolute top-2.5 right-1/3 w-2.5 h-2.5 bg-red-500 rounded-full animate-ping"></span>
+            </button>
+
+        </div>
+    </nav>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 1: FULL-SCREEN LOUD ALARM RINGING POPUP                         -->
+    <!-- ===================================================================== -->
+    <div id="loud-alarm-modal" class="hidden fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex items-center justify-center p-4">
+        <div class="royal-panel rounded-3xl p-6 max-w-md w-full text-center border-4 border-red-500 shadow-[0_0_50px_rgba(239,68,68,0.6)]">
+            <div class="w-20 h-20 mx-auto mb-3 rounded-full bg-red-600/30 border-2 border-red-400 flex items-center justify-center text-4xl animate-bounce">
+                🔔
+            </div>
+            <h3 class="text-2xl font-extrabold text-yellow-300 mb-1">पढ़ाई का समय हो गया है!</h3>
+            <p id="ring-modal-label" class="text-base text-white font-semibold mb-2">भौतिक विज्ञान कॉपी रिविज़न</p>
+            <div id="ring-modal-time" class="font-rajdhani text-4xl font-bold text-red-400 mb-6">06:00</div>
+            <div class="flex gap-3">
+                <button onclick="snoozeLoudAlarm()" class="flex-1 py-3.5 rounded-xl bg-blue-700 hover:bg-blue-600 text-white font-bold text-sm cursor-pointer">
+                    💤 5 मिनट बाद
+                </button>
+                <button onclick="stopLoudAlarm()" class="flex-1 py-3.5 rounded-xl bg-red-600 hover:bg-red-500 text-white font-extrabold text-sm shadow-lg cursor-pointer">
+                    🛑 अलार्म बंद करें
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- MODAL 2: ADD CUSTOM QUESTION MODAL                                    -->
+    <!-- ===================================================================== -->
+    <div id="custom-q-modal" class="hidden fixed inset-0 z-50 bg-black/85 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
+        <div class="royal-panel rounded-2xl p-5 max-w-lg w-full">
+            <div class="flex justify-between items-center border-b border-yellow-500/30 pb-3 mb-4">
+                <h3 class="text-base font-bold gold-gradient-text">इस अध्याय में नया प्रश्न जोड़ें</h3>
+                <button onclick="closeCustomQModal()" class="text-gray-300 hover:text-white text-xl cursor-pointer">&times;</button>
+            </div>
+            <form onsubmit="saveCustomMCQ(event)" class="space-y-3 text-sm">
+                <div>
+                    <label class="block text-yellow-300 text-xs mb-1">प्रश्न लिखें:</label>
+                    <textarea id="cq-text" rows="2" required placeholder="हिंदी में अपना प्रश्न लिखें..." class="w-full bg-kbcNavy border border-blue-500 rounded-xl p-2.5 text-white"></textarea>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" id="cq-a" required placeholder="विकल्प A" class="bg-kbcNavy border border-blue-500 rounded-xl p-2 text-white">
+                    <input type="text" id="cq-b" required placeholder="विकल्प B" class="bg-kbcNavy border border-blue-500 rounded-xl p-2 text-white">
+                    <input type="text" id="cq-c" required placeholder="विकल्प C" class="bg-kbcNavy border border-blue-500 rounded-xl p-2 text-white">
+                    <input type="text" id="cq-d" required placeholder="विकल्प D" class="bg-kbcNavy border border-blue-500 rounded-xl p-2 text-white">
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="block text-yellow-300 text-xs mb-1">सही विकल्प:</label>
+                        <select id="cq-ans" class="w-full bg-kbcNavy border border-blue-500 rounded-xl p-2 text-white">
+                            <option value="A">A</option>
+                            <option value="B">B</option>
+                            <option value="C">C</option>
+                            <option value="D">D</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-yellow-300 text-xs mb-1">व्याख्या (कारण):</label>
+                        <input type="text" id="cq-exp" placeholder="संक्षिप्त उत्तर व्याख्या" class="w-full bg-kbcNavy border border-blue-500 rounded-xl p-2 text-white">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 rounded-xl bg-gradient-to-r from-yellow-500 to-amber-500 text-black font-bold mt-2 cursor-pointer">
+                    प्रश्न सेव करें
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===================================================================== -->
+    <!-- COMPLETE JAVASCRIPT ENGINE                                            -->
+    <!-- ===================================================================== -->
+    <script>
+        // -----------------------------------------------------------------
+        // 1. OFFICIAL MP BOARD CLASS 12 PCM CHAPTERS (HINDI)
+        // -----------------------------------------------------------------
+        const mpBoardChapters = {
+            physics: [
+                { id: "p1", name: "अध्याय 1: वैद्युत आवेश तथा क्षेत्र" },
+                { id: "p2", name: "अध्याय 2: स्थिर वैद्युत विभव तथा धारिता" },
+                { id: "p3", name: "अध्याय 3: विद्युत धारा" },
+                { id: "p4", name: "अध्याय 4: गतिमान आवेश और चुंबकत्व" },
+                { id: "p5", name: "अध्याय 5: चुंबकत्व एवं द्रव्य" },
+                { id: "p6", name: "अध्याय 6: वैद्युत चुंबकीय प्रेरण" },
+                { id: "p7", name: "अध्याय 7: प्रत्यावर्ती धारा" },
+                { id: "p8", name: "अध्याय 8: वैद्युत चुंबकीय तरंगें" },
+                { id: "p9", name: "अध्याय 9: किरण प्रकाशिकी एवं प्रकाशिक यंत्र" },
+                { id: "p10", name: "अध्याय 10: तरंग-प्रकाशिकी" },
+                { id: "p11", name: "अध्याय 11: विकिरण तथा द्रव्य की द्वैत प्रकृति" },
+                { id: "p12", name: "अध्याय 12: परमाणु" },
+                { id: "p13", name: "अध्याय 13: नाभिक" },
+                { id: "p14", name: "अध्याय 14: अर्धचालक इलेक्ट्रॉनिकी" }
+            ],
+            chemistry: [
+                { id: "c1", name: "अध्याय 1: विलयन (Solutions)" },
+                { id: "c2", name: "अध्याय 2: वैद्युतरसायन (Electrochemistry)" },
+                { id: "c3", name: "अध्याय 3: रासायनिक बलगतिकी (Chemical Kinetics)" },
+                { id: "c4", name: "अध्याय 4: d- एवं f- ब्लॉक के तत्व" },
+                { id: "c5", name: "अध्याय 5: उपसहसंयोजन यौगिक" },
+                { id: "c6", name: "अध्याय 6: हैलोऐल्केन तथा हैलोऐरीन" },
+                { id: "c7", name: "अध्याय 7: ऐल्कोहॉल, फ़ीनॉल एवं ईथर" },
+                { id: "c8", name: "अध्याय 8: ऐल्डिहाइड, कीटोन एवं कार्बोक्सिलिक अम्ल" },
+                { id: "c9", name: "अध्याय 9: ऐमीन (Amines)" },
+                { id: "c10", name: "अध्याय 10: जैव-अणु (Biomolecules)" }
+            ],
+            maths: [
+                { id: "m1", name: "अध्याय 1: संबंध एवं फलन" },
+                { id: "m2", name: "अध्याय 2: प्रतिलोम त्रिकोणमितीय फलन" },
+                { id: "m3", name: "अध्याय 3: आव्यूह (Matrices)" },
+                { id: "m4", name: "अध्याय 4: सारणिक (Determinants)" },
+                { id: "m5", name: "अध्याय 5: सांतत्य तथा अवकलनीयता" },
+                { id: "m6", name: "अध्याय 6: अवकलज के अनुप्रयोग" },
+                { id: "m7", name: "अध्याय 7: समाकलन (Integrals)" },
+                { id: "m8", name: "अध्याय 8: समाकलनों के अनुप्रयोग" },
+                { id: "m9", name: "अध्याय 9: अवकल समीकरण" },
+                { id: "m10", name: "अध्याय 10: सदिश बीजगणित" },
+                { id: "m11", name: "अध्याय 11: त्रि-विमीय ज्यामिति" },
+                { id: "m12", name: "अध्याय 12: रैखिक प्रोग्रामन" },
+                { id: "m13", name: "अध्याय 13: प्रायिकता (Probability)" }
+            ]
+        };
+
+        const weekDaysHindi = ["सोमवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार", "रविवार"];
+
+        function getTodayHindiDay() {
+            const jsDay = new Date().getDay(); // 0 = Sun, 1 = Mon ... 6 = Sat
+            const map = ["रविवार", "सोमवार", "मंगलवार", "बुधवार", "गुरुवार", "शुक्रवार", "शनिवार"];
+            return map[jsDay];
+        }
+
+        // -----------------------------------------------------------------
+        // 2. BOTTOM SLIDE NAVIGATION (INSTAGRAM-STYLE 3 SLIDES)
+        // -----------------------------------------------------------------
+        function switchMainSlide(slideName) {
+            ['routine', 'quiz', 'alarm'].forEach(name => {
+                document.getElementById(`slide-${name}`).classList.add('hidden');
+                const navBtn = document.getElementById(`nav-slide-${name}`);
+                navBtn.className = 'flex flex-col items-center justify-center gap-1 text-blue-300 hover:text-white border-t-2 border-transparent transition cursor-pointer relative';
+            });
+
+            document.getElementById(`slide-${slideName}`).classList.remove('hidden');
+            const activeNav = document.getElementById(`nav-slide-${slideName}`);
+            activeNav.className = 'flex flex-col items-center justify-center gap-1 text-yellow-400 border-t-2 border-yellow-400 bg-blue-950/60 transition cursor-pointer relative';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // -----------------------------------------------------------------
+        // 3. LOUD AUDIO ENGINE (WEB AUDIO API HIGH-GAIN SIREN & KBC TONES)
+        // -----------------------------------------------------------------
+        let isSoundOn = true;
+        let audioContext = null;
+        let loudAlarmLoop = null;
+
+        function ensureAudioContext() {
+            if (!audioContext) {
+                const Ctx = window.AudioContext || window.webkitAudioContext;
+                if (Ctx) audioContext = new Ctx();
+            }
+            if (audioContext && audioContext.state === 'suspended') {
+                audioContext.resume();
+            }
+            return audioContext;
+        }
+
+        function playTone(freq, waveType = 'sine', duration = 0.25, delay = 0, volume = 0.25) {
+            if (!isSoundOn) return;
+            try {
+                const ctx = ensureAudioContext();
+                if (!ctx) return;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.type = waveType;
+                osc.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+                gain.gain.setValueAtTime(volume, ctx.currentTime + delay);
+                gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + duration);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(ctx.currentTime + delay);
+                osc.stop(ctx.currentTime + delay + duration);
+            } catch (e) {}
+        }
+
+        // Extra-Loud Multi-Harmonic Siren Burst for Alarm
+        function playLoudSirenBurst() {
+            try {
+                const ctx = ensureAudioContext();
+                if (!ctx) return;
+                const now = ctx.currentTime;
+
+                // Dual oscillators (Square + Sawtooth) at maximum safe gain (0.95) for high loudness
+                [880, 1174.66, 987.77, 1318.51].forEach((freq, i) => {
+                    const start = now + i * 0.22;
+                    const osc1 = ctx.createOscillator();
+                    const osc2 = ctx.createOscillator();
+                    const masterGain = ctx.createGain();
+
+                    osc1.type = 'square';
+                    osc2.type = 'sawtooth';
+                    osc1.frequency.setValueAtTime(freq, start);
+                    osc2.frequency.setValueAtTime(freq * 1.01, start);
+
+                    masterGain.gain.setValueAtTime(0.95, start);
+                    masterGain.gain.exponentialRampToValueAtTime(0.05, start + 0.20);
+
+                    osc1.connect(masterGain);
+                    osc2.connect(masterGain);
+                    masterGain.connect(ctx.destination);
+
+                    osc1.start(start);
+                    osc2.start(start);
+                    osc1.stop(start + 0.21);
+                    osc2.stop(start + 0.21);
+                });
+            } catch (e) {}
+        }
+
+        function playKBCEffect(type) {
+            if (!isSoundOn) return;
+            if (type === 'start') {
+                playTone(261.6, 'triangle', 0.2, 0, 0.25);
+                playTone(329.6, 'triangle', 0.2, 0.14, 0.25);
+                playTone(392.0, 'triangle', 0.2, 0.28, 0.25);
+                playTone(523.2, 'triangle', 0.4, 0.42, 0.3);
+            } else if (type === 'correct') {
+                playTone(523.2, 'sine', 0.18, 0, 0.3);
+                playTone(659.2, 'sine', 0.18, 0.12, 0.3);
+                playTone(784.0, 'sine', 0.4, 0.24, 0.35);
+            } else if (type === 'wrong') {
+                playTone(210, 'sawtooth', 0.25, 0, 0.3);
+                playTone(155, 'sawtooth', 0.45, 0.2, 0.3);
+            } else if (type === 'tick') {
+                playTone(900, 'sine', 0.05, 0, 0.2);
+            } else if (type === 'lifeline') {
+                playTone(440, 'triangle', 0.15, 0, 0.25);
+                playTone(660, 'triangle', 0.25, 0.12, 0.25);
+            }
+        }
+
+        function toggleGlobalSound() {
+            isSoundOn = !isSoundOn;
+            document.querySelector('#sound-btn i').className = isSoundOn
+                ? 'fa-solid fa-volume-high text-sm'
+                : 'fa-solid fa-volume-xmark text-sm';
+        }
+
+        // -----------------------------------------------------------------
+        // 4. SLIDE 1: DAY-WISE TIMETABLE & SYLLABUS TRACKER
+        // -----------------------------------------------------------------
+        let selectedRoutineDay = getTodayHindiDay();
+        let activeSyllabusSubject = 'physics';
+
+        function switchRoutineSubView(sub) {
+            if (sub === 'timetable') {
+                document.getElementById('view-timetable').classList.remove('hidden');
+                document.getElementById('view-syllabus').classList.add('hidden');
+                document.getElementById('subtab-timetable').className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-yellow-500 to-amber-500 text-black shadow transition cursor-pointer';
+                document.getElementById('subtab-syllabus').className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-blue-200 hover:bg-blue-900/60 transition cursor-pointer';
+            } else {
+                document.getElementById('view-timetable').classList.add('hidden');
+                document.getElementById('view-syllabus').classList.remove('hidden');
+                document.getElementById('subtab-syllabus').className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm bg-gradient-to-r from-yellow-500 to-amber-500 text-black shadow transition cursor-pointer';
+                document.getElementById('subtab-timetable').className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm text-blue-200 hover:bg-blue-900/60 transition cursor-pointer';
+                renderSyllabusList(activeSyllabusSubject);
+            }
+        }
+
+        function getDaySchedulesDB() {
+            try {
+                const raw = localStorage.getItem('mp12_day_schedules');
+                if (raw) return JSON.parse(raw);
+            } catch (e) {}
+
+            // Default starter schedule for today so user sees how it works immediately
+            const starter = {};
+            weekDaysHindi.forEach(d => starter[d] = []);
+            const today = getTodayHindiDay();
+            starter[today] = [
+                { id: 101, start: "06:00", end: "07:30", subject: "भौतिक विज्ञान (Physics)", type: "📒 कॉपी से पढ़ाई / नोट्स", note: "कॉपी से अध्याय 1 के मुख्य सूत्र और डेरिवेशन याद करना", done: false },
+                { id: 102, start: "16:30", end: "18:00", subject: "गणित (Maths)", type: "✍️ सवाल हल करना (Practice)", note: "प्रश्नावली के महत्वपूर्ण उदाहरण कॉपी में हल करना", done: false },
+                { id: 103, start: "20:00", end: "21:00", subject: "रसायन विज्ञान (Chemistry)", type: "📒 कॉपी से पढ़ाई / नोट्स", note: "अभिक्रियाएं और नोट्स का रिविज़न", done: false }
+            ];
+            localStorage.setItem('mp12_day_schedules', JSON.stringify(starter));
+            return starter;
+        }
+
+        function saveDaySchedulesDB(db) {
+            localStorage.setItem('mp12_day_schedules', JSON.stringify(db));
+            renderDaySelectorStrip();
+            renderSelectedDaySchedule();
+        }
+
+        function formatTime12Hr(time24) {
+            if (!time24) return "";
+            const [hStr, mStr] = time24.split(':');
+            let h = parseInt(hStr, 10);
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            return `${String(h).padStart(2, '0')}:${mStr} ${ampm}`;
+        }
+
+        function renderDaySelectorStrip() {
+            const strip = document.getElementById('day-selector-strip');
+            const db = getDaySchedulesDB();
+            const today = getTodayHindiDay();
+
+            strip.innerHTML = weekDaysHindi.map(day => {
+                const isSelected = day === selectedRoutineDay;
+                const isToday = day === today;
+                const count = (db[day] || []).length;
+
+                return `
+                    <button onclick="selectRoutineDay('${day}')" class="px-3.5 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition cursor-pointer flex flex-col items-center border ${
+                        isSelected
+                            ? 'bg-gradient-to-r from-yellow-500 to-amber-500 text-black border-yellow-300 shadow'
+                            : 'bg-kbcNavy/90 text-blue-200 border-blue-500/40 hover:border-yellow-400/50'
+                    }">
+                        <span>${day} ${isToday ? '(आज)' : ''}</span>
+                        <span class="text-[10px] ${isSelected ? 'text-black/80' : 'text-blue-400'}">${count} स्लॉट</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function selectRoutineDay(day) {
+            selectedRoutineDay = day;
+            document.getElementById('form-day-title').textContent = `${day} के लिए नया पढ़ने का समय जोड़ें`;
+            renderDaySelectorStrip();
+            renderSelectedDaySchedule();
+        }
+
+        function toggleAddSlotForm() {
+            const form = document.getElementById('add-slot-form');
+            document.getElementById('form-day-title').textContent = `${selectedRoutineDay} के लिए नया पढ़ने का समय जोड़ें`;
+            form.classList.toggle('hidden');
+        }
+
+        function saveDayTimeSlot(e) {
+            e.preventDefault();
+            const start = document.getElementById('slot-start').value;
+            const end = document.getElementById('slot-end').value;
+            const subject = document.getElementById('slot-subject').value;
+            const type = document.getElementById('slot-type').value;
+            const note = document.getElementById('slot-note').value.trim();
+
+            const db = getDaySchedulesDB();
+            if (!db[selectedRoutineDay]) db[selectedRoutineDay] = [];
+
+            db[selectedRoutineDay].push({
+                id: Date.now(),
+                start,
+                end,
+                subject,
+                type,
+                note,
+                done: false
+            });
+
+            // Sort slots chronologically by start time
+            db[selectedRoutineDay].sort((a, b) => a.start.localeCompare(b.start));
+            saveDaySchedulesDB(db);
+
+            document.getElementById('slot-note').value = '';
+            document.getElementById('add-slot-form').classList.add('hidden');
+            playKBCEffect('correct');
+        }
+
+        function copyScheduleToAllDays() {
+            const db = getDaySchedulesDB();
+            const currentSlots = db[selectedRoutineDay] || [];
+            if (currentSlots.length === 0) return;
+
+            weekDaysHindi.forEach(day => {
+                if (day !== selectedRoutineDay) {
+                    db[day] = currentSlots.map((s, idx) => ({
+                        ...s,
+                        id: Date.now() + idx + Math.random(),
+                        done: false
+                    }));
+                }
+            });
+            saveDaySchedulesDB(db);
+            playKBCEffect('correct');
+        }
+
+        function toggleSlotDone(slotId) {
+            const db = getDaySchedulesDB();
+            db[selectedRoutineDay] = (db[selectedRoutineDay] || []).map(slot =>
+                slot.id === slotId ? { ...slot, done: !slot.done } : slot
+            );
+            saveDaySchedulesDB(db);
+        }
+
+        function deleteDaySlot(slotId) {
+            const db = getDaySchedulesDB();
+            db[selectedRoutineDay] = (db[selectedRoutineDay] || []).filter(slot => slot.id !== slotId);
+            saveDaySchedulesDB(db);
+        }
+
+        function resetTodayTicks() {
+            const db = getDaySchedulesDB();
+            db[selectedRoutineDay] = (db[selectedRoutineDay] || []).map(slot => ({ ...slot, done: false }));
+            saveDaySchedulesDB(db);
+        }
+
+        function renderSelectedDaySchedule() {
+            const db = getDaySchedulesDB();
+            const slots = db[selectedRoutineDay] || [];
+            const container = document.getElementById('day-schedule-list');
+
+            document.getElementById('selected-day-heading').textContent = `${selectedRoutineDay} का पढ़ाई रूटीन`;
+
+            const doneCount = slots.filter(s => s.done).length;
+            const pct = slots.length > 0 ? Math.round((doneCount / slots.length) * 100) : 0;
+            document.getElementById('daily-progress-text').textContent = `${doneCount}/${slots.length} पूर्ण (${pct}%)`;
+            document.getElementById('daily-progress-bar').style.width = `${pct}%`;
+
+            if (slots.length === 0) {
+                container.innerHTML = `
+                    <div class="royal-panel rounded-2xl p-6 text-center space-y-2">
+                        <div class="text-3xl">📅</div>
+                        <p class="text-sm font-bold text-white">${selectedRoutineDay} के लिए अभी कोई टाइम-टेबल नहीं बना है।</p>
+                        <p class="text-xs text-blue-300">ऊपर "नया टाइम जोड़ें" बटन दबाकर इस दिन के पढ़ने का समय सेट करें।</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = slots.map(slot => `
+                <div class="royal-panel rounded-2xl p-3.5 flex items-start justify-between gap-3 transition ${slot.done ? 'border-green-500/60 bg-green-950/30' : ''}">
+                    <div class="flex items-start gap-3 flex-1">
+                        <input type="checkbox" ${slot.done ? 'checked' : ''} onchange="toggleSlotDone(${slot.id})" class="mt-1 w-5 h-5 accent-green-500 rounded cursor-pointer shrink-0">
+                        <div class="flex-1">
+                            <div class="flex flex-wrap items-center gap-1.5 mb-1">
+                                <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-yellow-500/20 text-yellow-300 border border-yellow-500/40">
+                                    <i class="fa-regular fa-clock mr-1"></i>${formatTime12Hr(slot.start)} - ${formatTime12Hr(slot.end)}
+                                </span>
+                                <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-blue-900/80 text-blue-200">
+                                    ${slot.type}
+                                </span>
+                            </div>
+                            <h4 class="font-bold text-sm sm:text-base ${slot.done ? 'line-through text-green-300' : 'text-white'}">${slot.subject}</h4>
+                            <p class="text-xs text-blue-100 mt-0.5 ${slot.done ? 'line-through opacity-70' : ''}">${slot.note}</p>
+                        </div>
+                    </div>
+                    <button onclick="deleteDaySlot(${slot.id})" title="हटाएँ" class="p-2 rounded-lg bg-red-950/70 border border-red-500/30 text-red-300 hover:bg-red-800 text-xs cursor-pointer shrink-0">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // --- MP Board Syllabus Checkoff Logic ---
+        function getSyllabusProgressDB() {
+            try {
+                return JSON.parse(localStorage.getItem('mp12_syllabus_ticks') || '{}');
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function toggleChapterCompleted(chapId) {
+            const ticks = getSyllabusProgressDB();
+            ticks[chapId] = !ticks[chapId];
+            localStorage.setItem('mp12_syllabus_ticks', JSON.stringify(ticks));
+            renderSyllabusList(activeSyllabusSubject);
+        }
+
+        function renderSyllabusList(subjectKey) {
+            activeSyllabusSubject = subjectKey;
+            const ticks = getSyllabusProgressDB();
+
+            // Update subject buttons UI
+            ['physics', 'chemistry', 'maths'].forEach(s => {
+                const btn = document.getElementById(`syl-btn-${s}`);
+                btn.className = s === subjectKey
+                    ? 'syl-sub-btn flex-1 py-2 rounded-xl font-bold text-xs bg-gradient-to-r from-yellow-500 to-amber-500 text-black shadow cursor-pointer'
+                    : 'syl-sub-btn flex-1 py-2 rounded-xl font-bold text-xs bg-blue-950 border border-blue-500/40 text-blue-200 cursor-pointer';
+            });
+
+            // Calculate overall progress across all 37 chapters
+            const allChapters = [
+                ...mpBoardChapters.physics,
+                ...mpBoardChapters.chemistry,
+                ...mpBoardChapters.maths
+            ];
+            const completedTotal = allChapters.filter(ch => ticks[ch.id]).length;
+            const overallPct = Math.round((completedTotal / allChapters.length) * 100);
+
+            document.getElementById('syllabus-overall-pct').textContent = `${overallPct}%`;
+            document.getElementById('syllabus-overall-bar').style.width = `${overallPct}%`;
+            document.getElementById('syllabus-overall-count').textContent = `कुल ${allChapters.length} अध्यायों में से ${completedTotal} अध्याय पूर्ण हुए। (जो अध्याय कॉपी/किताब से पढ़ लिया है उस पर टिक लगाएँ)`;
+
+            // Render selected subject chapters
+            const container = document.getElementById('syllabus-chapters-container');
+            const list = mpBoardChapters[subjectKey];
+
+            container.innerHTML = list.map(ch => {
+                const isDone = !!ticks[ch.id];
+                return `
+                    <label class="flex items-center justify-between gap-3 p-3 rounded-xl border cursor-pointer transition ${
+                        isDone ? 'bg-green-950/40 border-green-500/50' : 'bg-kbcNavy/85 border-blue-500/30 hover:border-yellow-400/50'
+                    }">
+                        <div class="flex items-center gap-3">
+                            <input type="checkbox" ${isDone ? 'checked' : ''} onchange="toggleChapterCompleted('${ch.id}')" class="w-5 h-5 accent-green-500 rounded cursor-pointer">
+                            <span class="text-xs sm:text-sm font-semibold ${isDone ? 'line-through text-green-300' : 'text-white'}">${ch.name}</span>
+                        </div>
+                        <span class="text-[11px] font-bold px-2 py-0.5 rounded ${isDone ? 'bg-green-600/30 text-green-300' : 'bg-blue-900/60 text-blue-300'}">
+                            ${isDone ? '✓ पूर्ण' : 'बाकी'}
+                        </span>
+                    </label>
+                `;
+            }).join('');
+        }
+
+        // -----------------------------------------------------------------
+        // 5. SLIDE 2: KBC HINDI MCQ QUESTION BANK & QUIZ ENGINE (NO MONEY LADDER)
+        // -----------------------------------------------------------------
+        const coreQuestionBank = {
+            p1: [
+                { q: "वायु में रखे दो एकांक धनावेशों के मध्य लगने वाला वैद्युत बल होता है:", o: ["9 × 10⁹ N", "9 × 10⁻⁹ N", "1 N", "शून्य"], a: "A", e: "कूलाम के नियम से F = (1/4πε₀)(q₁q₂/r²) = 9 × 10⁹ N होता है।" },
+                { q: "निर्वात की विद्युतशीलता (ε₀) का SI मात्रक है:", o: ["C² N⁻¹ m⁻²", "N m² C⁻²", "N C⁻¹", "F m"], a: "A", e: "ε₀ = q₁q₂ / (4πFr²), अतः मात्रक C² N⁻¹ m⁻² है।" },
+                { q: "एक इलेक्ट्रॉन पर आवेश का मान कितना होता है?", o: ["1.6 × 10⁻¹⁹ C", "1.6 × 10⁻¹⁸ C", "9.1 × 10⁻³¹ C", "1 C"], a: "A", e: "इलेक्ट्रॉन पर मूल आवेश 1.6 × 10⁻¹⁹ कूलॉम होता है।" },
+                { q: "वैद्युत क्षेत्र की तीव्रता (E) का SI मात्रक है:", o: ["न्यूटन / कूलॉम", "कूलॉम / न्यूटन", "जूल / कूलॉम", "वोल्ट × मीटर"], a: "A", e: "E = F/q होने के कारण इसका मात्रक न्यूटन/कूलॉम (N/C) है।" },
+                { q: "वैद्युत द्विध्रुव आघूर्ण (p) का SI मात्रक है:", o: ["कूलॉम-मीटर", "कूलॉम/मीटर", "न्यूटन-मीटर", "फैराडे"], a: "A", e: "p = q × 2l, इसलिए मात्रक कूलॉम-मीटर (C·m) होता है।" },
+                { q: "वैद्युत द्विध्रुव आघूर्ण की दिशा होती है:", o: ["ऋण आवेश से धन आवेश की ओर", "धन आवेश से ऋण आवेश की ओर", "अक्ष के लंबवत", "इनमें से कोई नहीं"], a: "A", e: "वैद्युत द्विध्रुव आघूर्ण सदिश की दिशा -q से +q की ओर होती है।" },
+                { q: "किसी बंद पृष्ठ से गुजरने वाला कुल वैद्युत फ्लक्स उस पृष्ठ में उपस्थित कुल आवेश का होता है:", o: ["1/ε₀ गुना", "ε₀ गुना", "4π गुना", "शून्य"], a: "A", e: "गाउस की प्रमेय के अनुसार Φ = q / ε₀ होता है।" },
+                { q: "एक खोखले आवेशित चालक गोले के अंदर वैद्युत क्षेत्र की तीव्रता होती है:", o: ["शून्य", "अनंत", "एकसमान अशून्य", "त्रिज्या के समानुपाती"], a: "A", e: "खोखले चालक के भीतर आवेश शून्य होने से वैद्युत क्षेत्र भी शून्य होता है।" },
+                { q: "यदि दो आवेशों के बीच की दूरी दोगुनी कर दी जाए, तो उनके बीच लगने वाला बल हो जाएगा:", o: ["एक चौथाई (1/4)", "आधा (1/2)", "दोगुना", "चार गुना"], a: "A", e: "F ∝ 1/r² के अनुसार दूरी 2 गुना करने पर बल 1/4 गुना रह जाता है।" },
+                { q: "विद्युत फ्लक्स (Electric Flux) किस प्रकार की राशि है?", o: ["अदिश राशि", "सदिश राशि", "प्रदिश राशि", "मात्रकहीन"], a: "A", e: "Φ = E·dS दो सदिशों का अदिश गुणनफल है, अतः यह अदिश राशि है।" },
+                { q: "विद्युत फ्लक्स का SI मात्रक है:", o: ["N m² C⁻¹", "N C⁻¹", "V m⁻¹", "J C⁻¹"], a: "A", e: "Φ = E × क्षेत्रफल = (N/C) × m² = N m² C⁻¹।" },
+                { q: "धातु का परावैद्युतांक (Dielectric Constant K) होता है:", o: ["अनंत (∞)", "शून्य", "1", "80"], a: "A", e: "धातुओं या सुचालकों के लिए परावैद्युतांक K का मान अनंत होता है।" },
+                { q: "एकसमान वैद्युत क्षेत्र में रखे द्विध्रुव पर लगने वाला अधिकतम बल आघूर्ण होता है:", o: ["pE", "pE/2", "2pE", "शून्य"], a: "A", e: "τ = pE sinθ, जब θ = 90° हो तो τ_max = pE होता है।" },
+                { q: "1 कूलॉम आवेश में इलेक्ट्रॉनों की संख्या कितनी होती है?", o: ["6.25 × 10¹⁸", "1.6 × 10⁻¹⁹", "6.25 × 10¹⁹", "9 × 10⁹"], a: "A", e: "n = q/e = 1 / (1.6 × 10⁻¹⁹) = 6.25 × 10¹⁸ इलेक्ट्रॉन।" },
+                { q: "आवेश का विमीय सूत्र है:", o: ["[AT]", "[MLT]", "[AT⁻¹]", "[M⁰L⁰T⁰]"], a: "A", e: "आवेश Q = धारा × समय = I × t = [AT]।" }
+            ],
+            p2: [
+                { q: "विद्युत विभव (Electric Potential) का SI मात्रक है:", o: ["वोल्ट (Volt)", "कूलॉम", "फैरड", "ओम"], a: "A", e: "विद्युत विभव का SI मात्रक जूल/कूलॉम या वोल्ट होता है।" },
+                { q: "पृथ्वी का विद्युत विभव कितना माना जाता है?", o: ["शून्य", "अनंत", "100 वोल्ट", "ऋणात्मक"], a: "A", e: "विशाल धारिता के कारण पृथ्वी का मानक विभव शून्य माना जाता है।" },
+                { q: "समविभव पृष्ठ (Equipotential Surface) और विद्युत क्षेत्र रेखाओं के बीच कोण होता है:", o: ["90°", "0°", "45°", "180°"], a: "A", e: "विद्युत क्षेत्र रेखाएं सदैव समविभव पृष्ठ के अभिलंबवत (90°) होती हैं।" },
+                { q: "विद्युत धारिता (Capacitance) का SI मात्रक है:", o: ["फैरड (Farad)", "हेनरी", "वेबर", "टेस्ला"], a: "A", e: "C = Q/V का SI मात्रक कूलॉम/वोल्ट या फैरड होता है।" },
+                { q: "संधारित्र की प्लेटों के बीच परावैद्युत पदार्थ रखने पर उसकी धारिता:", o: ["बढ़ जाती है", "घट जाती है", "अपरिवर्तित रहती है", "शून्य हो जाती है"], a: "A", e: "परावैद्युत K रखने पर धारिता K गुना (C' = KC) बढ़ जाती है।" },
+                { q: "वैद्युत द्विध्रुव की निरक्षीय स्थिति में विद्युत विभव होता है:", o: ["शून्य", "अनंत", "p / 4πε₀r²", "2p / 4πε₀r²"], a: "A", e: "निरक्षीय रेखा के प्रत्येक बिंदु पर +q और -q से दूरी समान होने से कुल विभव शून्य होता है।" },
+                { q: "1 इलेक्ट्रॉन-वोल्ट (1 eV) का मान जूल में होता है:", o: ["1.6 × 10⁻¹⁹ J", "9.1 × 10⁻³¹ J", "1.6 × 10⁻¹⁶ J", "1 J"], a: "A", e: "1 eV = 1.6 × 10⁻¹⁹ जूल ऊर्जा का छोटा मात्रक है।" },
+                { q: "समांतर प्लेट संधारित्र की धारिता का सूत्र है:", o: ["C = ε₀A / d", "C = ε₀d / A", "C = A / ε₀d", "C = 4πε₀d"], a: "A", e: "प्लेट क्षेत्रफल A व दूरी d होने पर C = ε₀A/d होता है।" },
+                { q: "आवेशित संधारित्र में संचित ऊर्जा का सूत्र है:", o: ["½ CV²", "CV²", "½ CV", "Q²C"], a: "A", e: "संधारित्र की स्थितिज ऊर्जा U = ½ CV² = ½ QV होती है।" },
+                { q: "तीन संधारित्र प्रत्येक की धारिता C है, श्रेणीक्रम में जोड़ने पर तुल्य धारिता होगी:", o: ["C / 3", "3C", "2C / 3", "C"], a: "A", e: "श्रेणीक्रम में 1/C_eq = 1/C + 1/C + 1/C = 3/C => C_eq = C/3।" }
+            ],
+            p3: [
+                { q: "विद्युत धारा (Electric Current) का SI मात्रक क्या है?", o: ["ऐम्पियर (Ampere)", "वोल्ट", "कूलॉम", "ओम"], a: "A", e: "विद्युत धारा का SI मात्रक ऐम्पियर (कूलॉम/सेकंड) होता है।" },
+                { q: "विशिष्ट प्रतिरोध या प्रतिरोधकता (Resistivity) का SI मात्रक है:", o: ["ओम-मीटर (Ω·m)", "ओम / मीटर", "ओम⁻¹", "म्हो"], a: "A", e: "ρ = RA/l से मात्रक Ω·m²/m = Ω·m होता है।" },
+                { q: "ताप बढ़ाने पर अर्धचालकों (Semiconductors) का प्रतिरोध:", o: ["घटता है", "बढ़ता है", "अपरिवर्तित रहता है", "शून्य हो जाता है"], a: "A", e: "ताप बढ़ाने पर अर्धचालकों में मुक्त इलेक्ट्रॉनों की संख्या बढ़ती है, जिससे प्रतिरोध घटता है।" },
+                { q: "किरचॉफ का प्रथम नियम (संधि नियम) किस संरक्षण सिद्धांत पर आधारित है?", o: ["आवेश संरक्षण", "ऊर्जा संरक्षण", "संवेग संरक्षण", "द्रव्यमान संरक्षण"], a: "A", e: "संधि पर आने वाली धारा = जाने वाली धारा, यह आवेश संरक्षण को दर्शाता है।" },
+                { q: "किरचॉफ का द्वितीय नियम (लूप नियम) किस संरक्षण सिद्धांत पर आधारित है?", o: ["ऊर्जा संरक्षण", "आवेश संरक्षण", "कोणीय संवेग संरक्षण", "द्रव्यमान संरक्षण"], a: "A", e: "बंद लूप में कुल विभवांतर शून्य होता है, जो ऊर्जा संरक्षण पर आधारित है।" },
+                { q: "एक तार को खींचकर उसकी लंबाई दोगुनी करने पर उसका प्रतिरोध हो जाएगा:", o: ["चार गुना", "दोगुना", "आधा", "एक चौथाई"], a: "A", e: "R' = n²R = 2²R = 4R (चार गुना) हो जाता है।" },
+                { q: "अतिचालक (Superconductor) पदार्थ की चालकता होती है:", o: ["अनंत", "शून्य", "अति अल्प", "1"], a: "A", e: "अतिचालक का प्रतिरोध शून्य होता है, इसलिए चालकता अनंत होती है।" },
+                { q: "1 किलोवाट-घंटा (1 kWh) बराबर होता है:", o: ["3.6 × 10⁶ जूल", "3.6 × 10⁵ जूल", "1000 जूल", "3600 जूल"], a: "A", e: "1 kWh = 1000 W × 3600 s = 3.6 × 10⁶ J।" },
+                { q: "मीटर सेतु किस सिद्धांत पर कार्य करता है?", o: ["व्हीटस्टोन सेतु के सिद्धांत पर", "विभवमापी के सिद्धांत पर", "फैराडे के नियम पर", "ऐम्पियर के नियम पर"], a: "A", e: "मीटर सेतु संतुलित व्हीटस्टोन सेतु के सिद्धांत पर कार्य करता है।" },
+                { q: "विभवमापी (Potentiometer) वोल्टमीटर से श्रेष्ठ है क्योंकि:", o: ["यह संतुलन की स्थिति में सेल से कोई धारा नहीं लेता", "यह सस्ता होता है", "यह छोटा होता है", "इसका प्रतिरोध शून्य होता है"], a: "A", e: "शून्य विक्षेप पर धारा शून्य होने से यह यथार्थ EMF मापता है।" }
+            ],
+            p4: [
+                { q: "चुंबकीय क्षेत्र (B) का SI मात्रक क्या है?", o: ["टेस्ला (Tesla)", "वेबर", "हेनरी", "कूलॉम"], a: "A", e: "चुंबकीय क्षेत्र का SI मात्रक टेस्ला या वेबर/मीटर² है।" },
+                { q: "एक आदर्श अमीटर का प्रतिरोध होना चाहिए:", o: ["शून्य", "अनंत", "अत्यधिक उच्च", "100 ओम"], a: "A", e: "परिपथ की धारा में परिवर्तन न हो, इसलिए आदर्श अमीटर का प्रतिरोध शून्य होता है।" },
+                { q: "एक आदर्श वोल्टमीटर का प्रतिरोध होना चाहिए:", o: ["अनंत", "शून्य", "अति अल्प", "1 ओम"], a: "A", e: "आदर्श वोल्टमीटर का प्रतिरोध अनंत होता है ताकि वह कोई धारा न खींचे।" },
+                { q: "धारामापी को अमीटर में बदलने के लिए जोड़ते हैं:", o: ["समांतर क्रम में निम्न प्रतिरोध (शंट)", "श्रेणीक्रम में उच्च प्रतिरोध", "श्रेणीक्रम में निम्न प्रतिरोध", "समांतर क्रम में उच्च प्रतिरोध"], a: "A", e: "धारामापी की कुंडली के समांतर क्रम में कम प्रतिरोध (Shunt) जोड़ा जाता है।" },
+                { q: "धारामापी को वोल्टमीटर में बदलने के लिए जोड़ते हैं:", o: ["श्रेणीक्रम में उच्च प्रतिरोध", "समांतर क्रम में निम्न प्रतिरोध", "समांतर क्रम में उच्च प्रतिरोध", "श्रेणीक्रम में शंट"], a: "A", e: "श्रेणीक्रम में उच्च प्रतिरोध जोड़ने से धारामापी वोल्टमीटर बन जाता है।" }
+            ],
+            p5: [
+                { q: "चुंबकीय आघूर्ण (M) का SI मात्रक है:", o: ["ऐम्पियर-मीटर² (A·m²)", "ऐम्पियर/मीटर", "टेस्ला", "वेबर"], a: "A", e: "M = NIA का SI मात्रक ऐम्पियर-मीटर² या जूल/टेस्ला होता है।" },
+                { q: "पृथ्वी के चुंबकीय ध्रुवों पर नमन कोण (Angle of Dip) का मान होता है:", o: ["90°", "0°", "45°", "60°"], a: "A", e: "चुंबकीय ध्रुवों पर पृथ्वी का चुंबकीय क्षेत्र ऊर्ध्वाधर होता है, अतः नमन कोण 90° है।" },
+                { q: "भूमध्य रेखा (विषुवत रेखा) पर नमन कोण का मान होता है:", o: ["0°", "90°", "45°", "180°"], a: "A", e: "विषुवत रेखा पर चुंबकीय क्षेत्र क्षैतिज होता है, अतः नमन कोण 0° होता है।" },
+                { q: "क्यूरी ताप (Curie Temperature) वह ताप है जिसके ऊपर लौहचुंबकीय पदार्थ बन जाता है:", o: ["अनुचुंबकीय", "प्रतिचुंबकीय", "अतिचालक", "अचालक"], a: "A", e: "क्यूरी ताप से ऊपर लौहचुंबकीय पदार्थ अनुचुंबकीय व्यवहार करने लगते हैं।" }
+            ],
+            p6: [
+                { q: "चुंबकीय फ्लक्स (Magnetic Flux) का SI मात्रक है:", o: ["वेबर (Weber)", "टेस्ला", "हेनरी", "फैरड"], a: "A", e: "चुंबकीय फ्लक्स Φ = B·A का SI मात्रक वेबर (Wb) होता है।" },
+                { q: "लेंज का नियम (Lenz's Law) किस संरक्षण सिद्धांत पर आधारित है?", o: ["ऊर्जा संरक्षण", "आवेश संरक्षण", "संवेग संरक्षण", "द्रव्यमान संरक्षण"], a: "A", e: "लेंज का नियम ऊर्जा संरक्षण के नियम का पालन करता है।" },
+                { q: "स्वप्रेरकत्व (Self Inductance) का SI मात्रक है:", o: ["हेनरी (Henry)", "वेबर", "टेस्ला", "ओम"], a: "A", e: "स्वप्रेरकत्व व अन्योन्य प्रेरकत्व दोनों का SI मात्रक हेनरी (H) है।" },
+                { q: "डायनेमो (विद्युत जनित्र) किस सिद्धांत पर कार्य करता है?", o: ["विद्युत चुंबकीय प्रेरण", "विद्युत अपघटन", "ऊष्मीय प्रभाव", "प्रकाश विद्युत प्रभाव"], a: "A", e: "डायनेमो यांत्रिक ऊर्जा को विद्युत चुंबकीय प्रेरण द्वारा विद्युत ऊर्जा में बदलता है।" }
+            ],
+            p7: [
+                { q: "भारत में घरों में दी जाने वाली प्रत्यावर्ती धारा (AC) की आवृत्ति होती है:", o: ["50 Hz", "60 Hz", "100 Hz", "220 Hz"], a: "A", e: "भारत में घरेलू AC सप्लाई की आवृत्ति 50 हर्ट्ज होती है।" },
+                { q: "प्रत्यावर्ती धारा के शिखर मान (I₀) तथा वर्ग माध्य मूल मान (I_rms) में संबंध है:", o: ["I_rms = I₀ / √2", "I_rms = √2 I₀", "I_rms = I₀ / 2", "I_rms = 2 I₀"], a: "A", e: "I_rms = I₀ / √2 = 0.707 I₀ होता है।" },
+                { q: "ट्रांसफार्मर किस सिद्धांत पर कार्य करता है?", o: ["अन्योन्य प्रेरण (Mutual Induction)", "स्वप्रेरण", "ओम के नियम", "किरचॉफ के नियम"], a: "A", e: "ट्रांसफार्मर अन्योन्य प्रेरण के सिद्धांत पर AC वोल्टता को घटाता या बढ़ाता है।" },
+                { q: "L-C-R अनुनादी परिपथ में शक्ति गुणांक (Power Factor) का मान होता है:", o: ["1", "0", "0.5", "अनंत"], a: "A", e: "अनुनाद की स्थिति में φ = 0°, अतः शक्ति गुणांक cos0° = 1 होता है।" }
+            ],
+            p8: [
+                { q: "विद्युत चुंबकीय तरंगों की प्रकृति होती है:", o: ["अनुप्रस्थ (Transverse)", "अनुदैर्ध्य", "यांत्रिक", "प्रगामी नहीं"], a: "A", e: "विद्युत चुंबकीय तरंगें अनुप्रस्थ तरंगें होती हैं।" },
+                { q: "ओजोन परत अवशोषित करती है:", o: ["पराबैंगनी विकिरण (UV Rays)", "अवरक्त विकिरण", "रेडियो तरंगें", "गामा किरणें"], a: "A", e: "ओजोन मंडल सूर्य से आने वाली हानिकारक पराबैंगनी किरणों को रोकता है।" },
+                { q: "कोहरे में फोटोग्राफी के लिए किन किरणों का उपयोग होता है?", o: ["अवरक्त किरणें (Infrared)", "पराबैंगनी किरणें", "एक्स-किरणें", "गामा किरणें"], a: "A", e: "अधिक तरंगदैर्ध्य के कारण अवरक्त किरणें कोहरे को पार कर जाती हैं।" }
+            ],
+            p9: [
+                { q: "लेंस की क्षमता (Power of Lens) का SI मात्रक है:", o: ["डायोप्टर (Dioptre)", "मीटर", "सेंटीमीटर", "वाट"], a: "A", e: "P = 1/f (मीटर में), इसका SI मात्रक डायोप्टर (D) होता है।" },
+                { q: "प्रकाशिक तंतु (Optical Fibre) किस सिद्धांत पर कार्य करता है?", o: ["पूर्ण आंतरिक परावर्तन", "व्यतिकरण", "विवर्तन", "ध्रुवण"], a: "A", e: "ऑप्टिकल फाइबर पूर्ण आंतरिक परावर्तन के सिद्धांत पर कार्य करता है।" },
+                { q: "आकाश का रंग नीला दिखाई देने का कारण है:", o: ["प्रकाश का प्रकीर्णन", "प्रकाश का परावर्तन", "अपवर्तन", "विवर्तन"], a: "A", e: "नीले रंग का प्रकीर्णन अधिक होने से आकाश नीला दिखता है।" },
+                { q: "स्वस्थ नेत्र के लिए स्पष्ट दृष्टि की न्यूनतम दूरी होती है:", o: ["25 cm", "25 m", "अनंत", "50 cm"], a: "A", e: "स्वस्थ मानव नेत्र का निकट बिंदु 25 सेमी तथा दूर बिंदु अनंत पर होता है।" }
+            ],
+            p10: [
+                { q: "निम्न में से कौन-सी घटना प्रकाश की अनुप्रस्थ प्रकृति की पुष्टि करती है?", o: ["ध्रुवण (Polarization)", "व्यतिकरण", "विवर्तन", "अपवर्तन"], a: "A", e: "ध्रुवण केवल अनुप्रस्थ तरंगों में ही संभव है, अनुदैर्ध्य में नहीं।" },
+                { q: "ब्रूस्टर का नियम (Brewster's Law) है:", o: ["μ = tan ip", "μ = sin ip", "μ = cos ip", "μ = cot ip"], a: "A", e: "माध्यम का अपवर्तनांक ध्रुवण कोण की स्पर्शज्या के बराबर होता है (μ = tan ip)।" },
+                { q: "यंग के द्वि-स्लिट प्रयोग में फ्रिंज चौड़ाई (β) का सूत्र है:", o: ["β = λD / d", "β = λd / D", "β = Dd / λ", "β = λ / Dd"], a: "A", e: "फ्रिंज चौड़ाई β = λD / d होती है।" }
+            ],
+            p11: [
+                { q: "प्लांक नियतांक (h) का SI मात्रक है:", o: ["जूल-सेकंड (J·s)", "जूल / सेकंड", "न्यूटन-मीटर", "इलेक्ट्रॉन-वोल्ट"], a: "A", e: "E = hν => h = E/ν = J / s⁻¹ = J·s।" },
+                { q: "डी-ब्रॉग्ली तरंगदैर्ध्य (λ) का सूत्र है:", o: ["λ = h / mv", "λ = mv / h", "λ = hmv", "λ = h / c"], a: "A", e: "द्रव्य तरंगों की तरंगदैर्ध्य λ = h / p = h / mv होती है।" },
+                { q: "फोटॉन का विराम द्रव्यमान (Rest Mass) होता है:", o: ["शून्य", "9.1 × 10⁻³¹ kg", "1.67 × 10⁻²⁷ kg", "अनंत"], a: "A", e: "फोटॉन का विराम द्रव्यमान शून्य होता है।" }
+            ],
+            p12: [
+                { q: "हाइड्रोजन परमाणु की प्रथम कक्षा की त्रिज्या (बोर त्रिज्या) होती है:", o: ["0.53 Å", "1.53 Å", "5.3 Å", "0.053 Å"], a: "A", e: "बोर त्रिज्या r₁ = 0.529 Å ≈ 0.53 Å होती है।" },
+                { q: "हाइड्रोजन परमाणु की निम्नतम अवस्था में कुल ऊर्जा होती है:", o: ["-13.6 eV", "+13.6 eV", "-3.4 eV", "0 eV"], a: "A", e: "E₁ = -13.6 eV होती है।" },
+                { q: "हाइड्रोजन स्पेक्ट्रम की कौन-सी श्रेणी दृश्य क्षेत्र (Visible Region) में पाई जाती है?", o: ["बामर श्रेणी (Balmer Series)", "लाइमन श्रेणी", "पाशन श्रेणी", "ब्रैकेट श्रेणी"], a: "A", e: "लाइमन पराबैंगनी में तथा बामर श्रेणी दृश्य प्रकाश क्षेत्र में पाई जाती है।" }
+            ],
+            p13: [
+                { q: "1 परमाणु द्रव्यमान मात्रक (1 amu) के तुल्य ऊर्जा होती है:", o: ["931.5 MeV", "931.5 eV", "13.6 eV", "1.6 MeV"], a: "A", e: "E = Δm·c² से 1 amu ≈ 931.5 MeV ऊर्जा प्राप्त होती है।" },
+                { q: "सूर्य और तारों में ऊर्जा का मुख्य स्रोत है:", o: ["नाभिकीय संलयन (Nuclear Fusion)", "नाभिकीय विखंडन", "रासायनिक दहन", "रेडियोधर्मिता"], a: "A", e: "सूर्य में हल्के हाइड्रोजन नाभिक संलयित होकर हीलियम बनाते हैं।" },
+                { q: "परमाणु भट्टी में मंदक (Moderator) के रूप में प्रयुक्त होता है:", o: ["भारी जल (D₂O) एवं ग्रेफाइट", "कैडमियम की छड़ें", "सोडियम", "यूरेनियम"], a: "A", e: "भारी जल व ग्रेफाइट न्यूट्रॉनों की गति मंद करते हैं।" }
+            ],
+            p14: [
+                { q: "N-प्रकार के अर्धचालक बनाने के लिए शुद्ध अर्धचालक में मिलाते हैं:", o: ["पंचसंयोजी अशुद्धि (आर्सेनिक, फॉस्फोरस)", "त्रिसंयोजी अशुद्धि", "द्विसंयोजी अशुद्धि", "अक्रिय गैस"], a: "A", e: "पंचसंयोजी अशुद्धि मिलाने से अतिरिक्त मुक्त इलेक्ट्रॉन मिलते हैं (N-type)।" },
+                { q: "P-प्रकार के अर्धचालक में बहुसंख्यक आवेश वाहक होते हैं:", o: ["होल (विवर)", "इलेक्ट्रॉन", "प्रोटॉन", "न्यूट्रॉन"], a: "A", e: "त्रिसंयोजी अशुद्धि मिलाने से P-प्रकार में होल बहुसंख्यक होते हैं।" },
+                { q: "P-N संधि डायोड का उपयोग किया जाता है:", o: ["दिष्टकारी (Rectifier) के रूप में", "प्रवर्धक के रूप में", "दोलित्र के रूप में", "ट्रांसफार्मर में"], a: "A", e: "P-N संधि डायोड AC को DC में बदलने (दिष्टकारी) के काम आता है।" }
+            ],
+            c1: [
+                { q: "मोलरता (Molarity) का मात्रक क्या है?", o: ["मोल / लीटर", "मोल / किग्रा", "ग्राम / लीटर", "मोल"], a: "A", e: "1 लीटर विलयन में घुले विलेय के मोलों की संख्या मोलरता (mol/L) कहलाती है।" },
+                { q: "निम्नलिखित में से कौन-सा अणुसंख्य गुणधर्म नहीं है?", o: ["प्रकाशीय सक्रियता", "परासरण दाब", "क्वथनांक में उन्नयन", "हिमांक में अवनमन"], a: "A", e: "प्रकाशीय सक्रियता अणुसंख्य गुणधर्म नहीं है।" },
+                { q: "मोललता (Molality) ताप पर निर्भर करती है या नहीं?", o: ["ताप पर निर्भर नहीं करती", "ताप बढ़ाने पर बढ़ती है", "ताप बढ़ाने पर घटती है", "शून्य हो जाती है"], a: "A", e: "मोललता विलायक के द्रव्यमान (kg) पर आधारित है, इसलिए ताप से अप्रभावित रहती है।" },
+                { q: "शुद्ध जल की मोलरता कितनी होती है?", o: ["55.56 M", "18 M", "1 M", "100 M"], a: "A", e: "1000 g / 18 g/mol = 55.56 मोल/लीटर।" },
+                { q: "राउल्ट का नियम संबंधित है:", o: ["वाष्प दाब से", "परासरण दाब से", "श्यानता से", "पृष्ठ तनाव से"], a: "A", e: "राउल्ट का नियम विलयन के वाष्प दाब और मोल प्रभाज में संबंध बताता है।" },
+                { q: "हेनरी का नियम संबंधित है:", o: ["द्रव में गैस की विलेयता से", "ठोस की विलेयता से", "वाष्प दाब से", "विद्युत अपघटन से"], a: "A", e: "गैस की द्रव में विलेयता दाब के समानुपाती होती है।" },
+                { q: "वांट हॉफ गुणांक (i) का मान NaCl के पूर्ण वियोजन पर होता है:", o: ["2", "1", "3", "0"], a: "A", e: "NaCl → Na⁺ + Cl⁻ (कुल 2 आयन), अतः i = 2।" },
+                { q: "मोल प्रभाज (Mole Fraction) के सभी घटकों का योग होता है:", o: ["1", "0", "100", "अनंत"], a: "A", e: "विलयन में सभी घटकों के मोल प्रभाजों का योग सदैव 1 होता है।" }
+            ],
+            c2: [
+                { q: "विशिष्ट चालकता (κ) का SI मात्रक है:", o: ["S cm⁻¹ या Ω⁻¹ m⁻¹", "Ω cm", "S cm²", "V m⁻¹"], a: "A", e: "विशिष्ट चालकता प्रतिरोधकता का व्युत्क्रम है।" },
+                { q: "मानक हाइड्रोजन इलेक्ट्रोड (SHE) का इलेक्ट्रोड विभव माना गया है:", o: ["0.00 वोल्ट", "1.00 वोल्ट", "-0.76 वोल्ट", "+0.34 वोल्ट"], a: "A", e: "SHE का मानक विभव शून्य (0.00 V) माना जाता है।" },
+                { q: "1 फैराडे (1 F) विद्युत आवेश का मान होता है:", o: ["96500 कूलॉम", "9650 कूलॉम", "1.6 × 10⁻¹⁹ कूलॉम", "6.022 × 10²³ कूलॉम"], a: "A", e: "1 मोल इलेक्ट्रॉनों का आवेश 1 F ≈ 96500 C होता है।" },
+                { q: "गैल्वेनिक सेल में एनोड पर होती है:", o: ["ऑक्सीकरण (Oxidation)", "अपचयन (Reduction)", "उदासीनीकरण", "कोई क्रिया नहीं"], a: "A", e: "एनोड पर सदैव ऑक्सीकरण तथा कैथोड पर अपचयन होता है।" }
+            ],
+            c3: [
+                { q: "शून्य कोटि की अभिक्रिया के वेग स्थिरांक (k) का मात्रक है:", o: ["mol L⁻¹ s⁻¹", "s⁻¹", "L mol⁻¹ s⁻¹", "L² mol⁻² s⁻¹"], a: "A", e: "शून्य कोटि में वेग = k, अतः मात्रक mol L⁻¹ s⁻¹ होता है।" },
+                { q: "प्रथम कोटि की अभिक्रिया के वेग स्थिरांक (k) का मात्रक है:", o: ["s⁻¹ (समय⁻¹)", "mol L⁻¹ s⁻¹", "L mol⁻¹ s⁻¹", "मात्रकहीन"], a: "A", e: "प्रथम कोटि में k का मात्रक समय⁻¹ (sec⁻¹) होता है।" },
+                { q: "प्रथम कोटि की अभिक्रिया का अर्ध-आयु काल (t₁/₂) निर्भर करता है:", o: ["प्रारंभिक सांद्रता पर निर्भर नहीं करता", "प्रारंभिक सांद्रता के समानुपाती", "सांद्रता के वर्ग के समानुपाती", "व्युत्क्रमानुपाती"], a: "A", e: "t₁/₂ = 0.693 / k, इसमें प्रारंभिक सांद्रता नहीं आती।" }
+            ],
+            c4: [
+                { q: "संक्रमण तत्व (Transition Elements) किस ब्लॉक में रखे गए हैं?", o: ["d-ब्लॉक", "s-ब्लॉक", "p-ब्लॉक", "f-ब्लॉक"], a: "A", e: "d-ब्लॉक के तत्व संक्रमण तत्व कहलाते हैं।" },
+                { q: "निम्न में से कौन-सा आयन रंगहीन होगा?", o: ["Zn²⁺ तथा Sc³⁺", "Cu²⁺", "Fe³⁺", "Mn²⁺"], a: "A", e: "Zn²⁺ (3d¹⁰) व Sc³⁺ (3d⁰) में अयुग्मित इलेक्ट्रॉन शून्य हैं।" },
+                { q: "KMnO₄ में मैंगनीज (Mn) की ऑक्सीकरण संख्या है:", o: ["+7", "+6", "+4", "+2"], a: "A", e: "+1 + x + 4(-2) = 0 => x = +7।" }
+            ],
+            c5: [
+                { q: "EDTA किस प्रकार का लिगेंड है?", o: ["षट्दंतुर (Hexadentate) लिगेंड", "एकदंतुर", "द्विदंतुर", "उभयदंतुर"], a: "A", e: "EDTA⁴⁻ में 6 दाता परमाणु (2 N और 4 O) होते हैं।" },
+                { q: "हीमोग्लोबिन किस धातु का संकुल यौगिक है?", o: ["आयरन (Fe)", "मैग्नीशियम (Mg)", "कोबाल्ट (Co)", "कॉपर (Cu)"], a: "A", e: "हीमोग्लोबिन में Fe तथा क्लोरोफिल में Mg होता है।" },
+                { q: "K₄[Fe(CN)₆] में Fe की समन्वय संख्या (Coordination Number) है:", o: ["6", "4", "2", "3"], a: "A", e: "6 CN⁻ लिगेंड जुड़े होने से समन्वय संख्या 6 है।" }
+            ],
+            c6: [
+                { q: "क्लोरोफॉर्म (CHCl₃) को प्रकाश व वायु में खुला रखने पर कौन-सी विषैली गैस बनती है?", o: ["फॉस्जीन (COCl₂)", "मस्टर्ड गैस", "अमोनिया", "मेथेन"], a: "A", e: "ऑक्सीकरण से फॉस्जीन (COCl₂) बनती है, अतः इसे रंगीन बोतल में रखते हैं।" },
+                { q: "SN1 अभिक्रिया कितने पदों में पूर्ण होती है?", o: ["2 पदों में", "1 पद में", "3 पदों में", "4 पदों में"], a: "A", e: "SN1 दो पदों में तथा SN2 एक पद में होती है।" },
+                { q: "वुर्ट्ज अभिक्रिया में किस धातु का उपयोग होता है?", o: ["शुष्क ईथर में सोडियम (Na)", "जिंक", "मैग्नीशियम", "कॉपर"], a: "A", e: "ऐल्किल हैलाइड शुष्क ईथर में Na से क्रिया कर उच्च ऐल्केन बनाते हैं।" }
+            ],
+            c7: [
+                { q: "ल्यूकास अभिकर्मक (Lucas Reagent) है:", o: ["निर्जल ZnCl₂ + सांद्र HCl", "तनु H₂SO₄", "क्षारीय KMnO₄", "ब्रोमीन जल"], a: "A", e: "ल्यूकास अभिकर्मक 1°, 2° व 3° ऐल्कोहॉल में विभेद करता है।" },
+                { q: "रीमर-टीमन अभिक्रिया में फ़ीनॉल से मुख्य उत्पाद बनता है:", o: ["सैलिसिलैल्डिहाइड", "बेंजोइक अम्ल", "पिक्रिक अम्ल", "एनिसोल"], a: "A", e: "फ़ीनॉल + CHCl₃ + NaOH से सैलिसिलैल्डिहाइड बनता है।" }
+            ],
+            c8: [
+                { q: "टॉलेन अभिकर्मक (Tollen's Reagent) है:", o: ["अमोनियामय सिल्वर नाइट्रेट", "फेलिंग विलयन", "ल्यूकास अभिकर्मक", "शिफ अभिकर्मक"], a: "A", e: "टॉलेन अभिकर्मक ऐल्डिहाइड के साथ रजत दर्पण देता है।" },
+                { q: "कैनिजारो अभिक्रिया देते हैं:", o: ["α-हाइड्रोजन विहीन ऐल्डिहाइड (HCHO, C₆H₅CHO)", "कीटोन", "ऐसीटैल्डिहाइड", "कार्बोक्सिलिक अम्ल"], a: "A", e: "α-हाइड्रोजन विहीन ऐल्डिहाइड सांद्र क्षार से कैनिजारो अभिक्रिया देते हैं।" }
+            ],
+            c9: [
+                { q: "कार्बिलऐमीन अभिक्रिया (आइसोसायनाइड परीक्षण) देते हैं:", o: ["केवल प्राथमिक (1°) ऐमीन", "द्वितीयक ऐमीन", "तृतीयक ऐमीन", "चतुष्क लवण"], a: "A", e: "1° ऐमीन क्लोरोफॉर्म व KOH से दुर्गंधयुक्त आइसोसायनाइड बनाते हैं।" },
+                { q: "हिंसबर्ग अभिकर्मक है:", o: ["बेंजीन सल्फोनिल क्लोराइड (C₆H₅SO₂Cl)", "ल्यूकास अभिकर्मक", "टॉलेन अभिकर्मक", "ग्रिग्नार्ड अभिकर्मक"], a: "A", e: "1°, 2° तथा 3° ऐमीनों में विभेद हेतु हिंसबर्ग अभिकर्मक प्रयुक्त होता है।" }
+            ],
+            c10: [
+                { q: "DNA में कौन-सा नाइट्रोजनी क्षार नहीं पाया जाता है?", o: ["यूरेसिल (Uracil)", "थायमीन", "एडिनीन", "साइटोसीन"], a: "A", e: "DNA में थायमीन होता है, जबकि RNA में थायमीन के स्थान पर यूरेसिल होता है।" },
+                { q: "विटामिन C का रासायनिक नाम है:", o: ["ऐस्कॉर्बिक अम्ल", "रेटिनॉल", "थायमीन", "कैल्सिफेरॉल"], a: "A", e: "विटामिन C ऐस्कॉर्बिक अम्ल है, इसकी कमी से स्कर्वी रोग होता है।" },
+                { q: "रक्त का थक्का जमने में सहायक विटामिन है:", o: ["विटामिन K", "विटामिन A", "विटामिन B", "विटामिन D"], a: "A", e: "विटामिन K रक्त स्कंदन के लिए आवश्यक है।" }
+            ],
+            m1: [
+                { q: "यदि समुच्चय A में 3 अवयव हैं, तो A पर कुल संबंधों की संख्या होगी:", o: ["2⁹", "2³", "3²", "9"], a: "A", e: "संबंधों की कुल संख्या = 2^(n×n) = 2^(3×3) = 2⁹।" },
+                { q: "एक संबंध R तुल्यता संबंध कहलाता है यदि वह हो:", o: ["स्वतुल्य, सममित तथा संक्रामक", "केवल स्वतुल्य", "केवल सममित", "केवल संक्रामक"], a: "A", e: "तुल्यता संबंध के लिए स्वतुल्य, सममित और संक्रामक तीनों होना आवश्यक है।" },
+                { q: "फलन f : R → R, f(x) = 3x द्वारा परिभाषित है, तो f है:", o: ["एकैकी आच्छादक (Bijective)", "बहुएक आच्छादक", "एकैकी परंतु आच्छादक नहीं", "न एकैकी न आच्छादक"], a: "A", e: "वास्तविक संख्याओं पर रैखिक फलन f(x) = 3x एकैकी और आच्छादक दोनों है।" },
+                { q: "यदि f(x) = 2x + 3 तथा g(x) = x - 1, तो (fog)(2) का मान होगा:", o: ["5", "7", "3", "9"], a: "A", e: "g(2) = 1, अतः f(1) = 2(1) + 3 = 5।" },
+                { q: "यदि n(A) = 3 तथा n(B) = 2, तो A से B में कुल फलनों की संख्या होगी:", o: ["8 (2³)", "9 (3²)", "6", "5"], a: "A", e: "A से B में कुल फलन = [n(B)]^n(A) = 2³ = 8।" },
+                { q: "यदि f : R → R, f(x) = 2x - 3 है, तो f⁻¹(x) का मान होगा:", o: ["(x + 3) / 2", "(x - 3) / 2", "2x + 3", "3x - 2"], a: "A", e: "y = 2x - 3 => x = (y + 3)/2।" }
+            ],
+            m2: [
+                { q: "sin⁻¹(1/2) का मुख्य मान (Principal Value) है:", o: ["π / 6", "π / 3", "π / 4", "π / 2"], a: "A", e: "sin(30°) = 1/2, अतः मुख्य मान π/6 है।" },
+                { q: "sin⁻¹x + cos⁻¹x का मान होता है (जहाँ x ∈ [-1, 1]):", o: ["π / 2", "π", "0", "1"], a: "A", e: "सर्वसमिका: sin⁻¹x + cos⁻¹x = π/2।" },
+                { q: "tan⁻¹x + cot⁻¹x का मान होता है:", o: ["π / 2", "π", "0", "2π"], a: "A", e: "tan⁻¹x + cot⁻¹x = π/2।" },
+                { q: "cos⁻¹(cos 7π/6) का मान है:", o: ["5π / 6", "7π / 6", "π / 6", "π / 3"], a: "A", e: "cos⁻¹ का परिसर [0, π] है, अतः 5π/6।" }
+            ],
+            m3: [
+                { q: "यदि A एक m × n आव्यूह है तथा B एक n × p आव्यूह है, तो AB की कोटि होगी:", o: ["m × p", "n × n", "m × n", "p × m"], a: "A", e: "गुणनफल आव्यूह AB की कोटि m × p होती है।" },
+                { q: "एक वर्ग आव्यूह A सममित आव्यूह कहलाता है यदि:", o: ["A' = A", "A' = -A", "A² = I", "|A| = 0"], a: "A", e: "परिवर्त आव्यूह A' = A हो तो वह सममित आव्यूह है।" },
+                { q: "यदि A तथा B व्युत्क्रमणीय आव्यूह हैं, तो (AB)⁻¹ बराबर होता है:", o: ["B⁻¹ A⁻¹", "A⁻¹ B⁻¹", "AB", "A' B'"], a: "A", e: "(AB)⁻¹ = B⁻¹ A⁻¹ होता है।" }
+            ],
+            m4: [
+                { q: "यदि A कोटि 3 का वर्ग आव्यूह है, तो |kA| का मान होगा:", o: ["k³ |A|", "k |A|", "3k |A|", "k² |A|"], a: "A", e: "n कोटि के वर्ग आव्यूह के लिए |kA| = kⁿ |A| = k³|A|।" },
+                { q: "एक वर्ग आव्यूह A अव्युत्क्रमणीय (Singular) कहलाता है यदि:", o: ["|A| = 0", "|A| ≠ 0", "|A| = 1", "A = I"], a: "A", e: "जब |A| = 0 हो तो A⁻¹ का अस्तित्व नहीं होता।" }
+            ],
+            m5: [
+                { q: "d/dx (sin⁻¹x) का मान होता है:", o: ["1 / √(1 - x²)", "-1 / √(1 - x²)", "1 / (1 + x²)", "cos⁻¹x"], a: "A", e: "sin⁻¹x का अवकलज 1 / √(1 - x²) होता है।" },
+                { q: "d/dx (tan⁻¹x) का मान होता है:", o: ["1 / (1 + x²)", "1 / √(1 - x²)", "sec²x", "-1 / (1 + x²)"], a: "A", e: "tan⁻¹x का अवकलज 1 / (1 + x²) होता है।" },
+                { q: "d/dx (aˣ) का मान होता है:", o: ["aˣ logₑ a", "x a^(x-1)", "aˣ", "eˣ"], a: "A", e: "चरघातांकी फलन aˣ का अवकलन aˣ logₑ a होता है।" }
+            ],
+            m6: [
+                { q: "वृत्त के क्षेत्रफल के परिवर्तन की दर त्रिज्या r के सापेक्ष जब r = 5 cm है:", o: ["10π cm²/cm", "25π", "5π", "20π"], a: "A", e: "dA/dr = 2πr = 2π(5) = 10π।" },
+                { q: "फलन f(x) किसी अंतराल में निरंतर वर्धमान होगा यदि:", o: ["f'(x) > 0", "f'(x) < 0", "f'(x) = 0", "f''(x) = 0"], a: "A", e: "f'(x) > 0 होने पर फलन वर्धमान होता है।" }
+            ],
+            m7: [
+                { q: "∫ eˣ [f(x) + f'(x)] dx का मान होता है:", o: ["eˣ f(x) + C", "eˣ f'(x) + C", "f(x) + C", "eˣ + C"], a: "A", e: "मानक समाकलन सूत्र ∫ eˣ[f(x)+f'(x)]dx = eˣf(x) + C है।" },
+                { q: "∫ (1 / (1 + x²)) dx का मान है:", o: ["tan⁻¹x + C", "sin⁻¹x + C", "log(1+x²) + C", "sec⁻¹x + C"], a: "A", e: "1/(1+x²) का समाकलन tan⁻¹x + C होता है।" },
+                { q: "∫₀^(π/2) [sin x / (sin x + cos x)] dx का मान है:", o: ["π / 4", "π / 2", "0", "1"], a: "A", e: "निश्चित समाकलन प्रगुण से मान π/4 प्राप्त होता है।" }
+            ],
+            m8: [
+                { q: "वृत्त x² + y² = a² का संपूर्ण क्षेत्रफल होता है:", o: ["πa²", "2πa", "4πa²", "πa²/2"], a: "A", e: "त्रिज्या a वाले वृत्त का क्षेत्रफल πa² वर्ग इकाई होता है।" }
+            ],
+            m9: [
+                { q: "अवकल समीकरण (d²y/dx²)³ + (dy/dx)² + y = 0 की कोटि तथा घात क्रमशः हैं:", o: ["कोटि 2, घात 3", "कोटि 3, घात 2", "कोटि 2, घात 2", "कोटि 1, घात 3"], a: "A", e: "उच्चतम अवकलज d²y/dx² है अतः कोटि 2 और घात 3 है।" },
+                { q: "रैखिक अवकल समीकरण dy/dx + Py = Q का समाकलन गुणक (I.F.) है:", o: ["e^(∫ P dx)", "e^(∫ Q dx)", "∫ P dx", "log P"], a: "A", e: "I.F. = e^(∫ P dx) होता है।" }
+            ],
+            m10: [
+                { q: "दो सदिश a तथा b परस्पर लंबवत होंगे यदि:", o: ["a · b = 0", "a × b = 0", "a + b = 0", "a = b"], a: "A", e: "θ = 90° होने पर अदिश गुणनफल a·b = 0।" },
+                { q: "सदिश î × ĵ का मान होता है:", o: ["k̂", "-k̂", "0", "1"], a: "A", e: "î × ĵ = k̂ होता है।" }
+            ],
+            m11: [
+                { q: "किसी रेखा की दिक्-कोज्याओं l, m, n के वर्गों का योग होता है:", o: ["1 (l² + m² + n² = 1)", "0", "3", "-1"], a: "A", e: "l² + m² + n² = 1 होता है।" },
+                { q: "x-अक्ष की दिक्-कोज्याएं होती हैं:", o: ["(1, 0, 0)", "(0, 1, 0)", "(0, 0, 1)", "(1, 1, 1)"], a: "A", e: "x-अक्ष की दिक्-कोज्याएं (1, 0, 0) होती हैं।" }
+            ],
+            m12: [
+                { q: "LPP का इष्टतम मान सदैव प्राप्त होता है:", o: ["सुसंगत क्षेत्र के कोणीय बिंदुओं पर", "मूल बिंदु पर", "अक्षों के बाहर", "केंद्र पर"], a: "A", e: "कोणीय बिंदु प्रमेय के अनुसार इष्टतम मान शीर्षों पर मिलता है।" }
+            ],
+            m13: [
+                { q: "यदि A तथा B दो स्वतंत्र घटनाएं हैं, तो P(A ∩ B) बराबर है:", o: ["P(A) · P(B)", "P(A) + P(B)", "P(A) / P(B)", "0"], a: "A", e: "स्वतंत्र घटनाओं के लिए P(A ∩ B) = P(A) × P(B) होता है।" },
+                { q: "सप्रतिबंध प्रायिकता P(A|B) का सूत्र है:", o: ["P(A ∩ B) / P(B)", "P(A ∩ B) / P(A)", "P(A) + P(B)", "P(A) · P(B)"], a: "A", e: "P(A|B) = P(A ∩ B) / P(B) होता है।" }
+            ]
+        };
+
+        function getCustomMCQsDB() {
+            try {
+                return JSON.parse(localStorage.getItem('mp12_custom_mcqs') || '{}');
+            } catch (e) {
+                return {};
+            }
+        }
+
+        function getChapterQuestionPool(subjectKey, chapId) {
+            const customDB = getCustomMCQsDB();
+            let pool = [...(coreQuestionBank[chapId] || [])];
+            if (customDB[chapId]) {
+                pool = [...customDB[chapId], ...pool];
+            }
+
+            // Fill up to 30 questions from same subject so every chapter has a full 30-MCQ test
+            if (pool.length < 30) {
+                const sameSubjKeys = Object.keys(coreQuestionBank).filter(k => k.startsWith(subjectKey[0]) && k !== chapId);
+                for (let k of sameSubjKeys) {
+                    for (let item of coreQuestionBank[k]) {
+                        if (pool.length >= 30) break;
+                        pool.push({
+                            ...item,
+                            q: `[बोर्ड रिविज़न] ${item.q}`
+                        });
+                    }
+                    if (pool.length >= 30) break;
+                }
+            }
+            return pool;
+        }
+
+        function populateQuizChapters() {
+            const subj = document.getElementById('quiz-subject-select').value;
+            const chapSel = document.getElementById('quiz-chapter-select');
+            chapSel.innerHTML = '';
+
+            mpBoardChapters[subj].forEach(ch => {
+                const opt = document.createElement('option');
+                opt.value = ch.id;
+                opt.textContent = ch.name;
+                chapSel.appendChild(opt);
+            });
+            updateQuizChapterInfo();
+        }
+
+        function updateQuizChapterInfo() {
+            const subj = document.getElementById('quiz-subject-select').value;
+            const chapId = document.getElementById('quiz-chapter-select').value;
+            const count = getChapterQuestionPool(subj, chapId).length;
+            document.getElementById('quiz-chapter-info').textContent = `✓ इस अध्याय के लिए ${count} बोर्ड प्रश्न तैयार हैं।`;
+        }
+
+        function openCustomQModal() {
+            document.getElementById('custom-q-modal').classList.remove('hidden');
+        }
+
+        function closeCustomQModal() {
+            document.getElementById('custom-q-modal').classList.add('hidden');
+        }
+
+        function saveCustomMCQ(e) {
+            e.preventDefault();
+            const chapId = document.getElementById('quiz-chapter-select').value;
+            const q = document.getElementById('cq-text').value.trim();
+            const o = [
+                document.getElementById('cq-a').value.trim(),
+                document.getElementById('cq-b').value.trim(),
+                document.getElementById('cq-c').value.trim(),
+                document.getElementById('cq-d').value.trim()
+            ];
+            const a = document.getElementById('cq-ans').value;
+            const exp = document.getElementById('cq-exp').value.trim() || "आपका जोड़ा गया बोर्ड प्रश्न।";
+
+            const db = getCustomMCQsDB();
+            if (!db[chapId]) db[chapId] = [];
+            db[chapId].push({ q, o, a, e: exp });
+            localStorage.setItem('mp12_custom_mcqs', JSON.stringify(db));
+
+            e.target.reset();
+            closeCustomQModal();
+            updateQuizChapterInfo();
+        }
+
+        // Quiz Runtime State
+        let activeQuestions = [];
+        let flipBackupQuestion = null;
+        let currentIdx = 0;
+        let correctScore = 0;
+        let optionLocked = false;
+        let qTimer = null;
+        let qSeconds = 30;
+        let life5050Used = false, lifePollUsed = false, lifeFlipUsed = false;
+
+        function shuffleQuestionChoices(item) {
+            const letters = ['A', 'B', 'C', 'D'];
+            const rightText = item.o[letters.indexOf(item.a)];
+            const mixed = [...item.o].sort(() => Math.random() - 0.5);
+            return {
+                q: item.q,
+                o: mixed,
+                a: letters[mixed.indexOf(rightText)],
+                e: item.e
+            };
+        }
+
+        function startKBCQuiz() {
+            const subj = document.getElementById('quiz-subject-select').value;
+            const chapSel = document.getElementById('quiz-chapter-select');
+            const chapId = chapSel.value;
+            const chapName = chapSel.options[chapSel.selectedIndex].textContent;
+            const limit = parseInt(document.getElementById('quiz-count-select').value, 10);
+
+            const fullSet = getChapterQuestionPool(subj, chapId).map(shuffleQuestionChoices);
+            activeQuestions = fullSet.slice(0, limit);
+            flipBackupQuestion = fullSet[limit] || shuffleQuestionChoices(fullSet[0]);
+
+            currentIdx = 0;
+            correctScore = 0;
+            life5050Used = false;
+            lifePollUsed = false;
+            lifeFlipUsed = false;
+
+            ['life-5050', 'life-poll', 'life-flip'].forEach(id => {
+                const b = document.getElementById(id);
+                b.disabled = false;
+                b.classList.remove('opacity-40', 'line-through');
+            });
+
+            const subjLabels = {
+                physics: "भौतिक विज्ञान (Physics)",
+                chemistry: "रसायन विज्ञान (Chemistry)",
+                maths: "गणित (Mathematics)"
+            };
+            document.getElementById('arena-subject-badge').textContent = subjLabels[subj];
+            document.getElementById('arena-chapter-title').textContent = chapName;
+            document.getElementById('q-num-total').textContent = activeQuestions.length;
+
+            document.getElementById('quiz-setup').classList.add('hidden');
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-arena').classList.remove('hidden');
+
+            playKBCEffect('start');
+            loadQuestionOnScreen();
+        }
+
+        function loadQuestionOnScreen() {
+            optionLocked = false;
+            document.getElementById('arena-feedback-box').classList.add('hidden');
+            document.getElementById('audience-poll-box').classList.add('hidden');
+
+            const item = activeQuestions[currentIdx];
+            document.getElementById('q-num-current').textContent = currentIdx + 1;
+            document.getElementById('q-score-correct').textContent = correctScore;
+            document.getElementById('arena-question-text').textContent = item.q;
+
+            ['A', 'B', 'C', 'D'].forEach((ch, idx) => {
+                const btn = document.getElementById(`opt-btn-${ch}`);
+                btn.disabled = false;
+                btn.style.visibility = 'visible';
+                btn.className = 'kbc-option py-3.5 px-6 text-left flex items-center gap-3 cursor-pointer';
+                document.getElementById(`opt-text-${ch}`).textContent = item.o[idx];
+            });
+
+            startQuestionCountdown();
+        }
+
+        function startQuestionCountdown() {
+            clearInterval(qTimer);
+            qSeconds = 30;
+            const ring = document.getElementById('kbc-timer-ring');
+            const txt = document.getElementById('kbc-timer-text');
+            txt.textContent = qSeconds;
+            ring.classList.remove('border-red-500');
+            ring.classList.add('border-yellow-400');
+
+            qTimer = setInterval(() => {
+                qSeconds--;
+                txt.textContent = qSeconds;
+                if (qSeconds <= 10 && qSeconds > 0) {
+                    ring.classList.remove('border-yellow-400');
+                    ring.classList.add('border-red-500');
+                    playKBCEffect('tick');
+                }
+                if (qSeconds <= 0) {
+                    clearInterval(qTimer);
+                    onQuestionTimeout();
+                }
+            }, 1000);
+        }
+
+        function onQuestionTimeout() {
+            if (optionLocked) return;
+            optionLocked = true;
+            playKBCEffect('wrong');
+            const item = activeQuestions[currentIdx];
+            document.getElementById(`opt-btn-${item.a}`).classList.add('correct');
+            ['A', 'B', 'C', 'D'].forEach(l => document.getElementById(`opt-btn-${l}`).disabled = true);
+            showArenaFeedback(false, "समय समाप्त!", `सही उत्तर (${item.a}) है। ${item.e}`);
+        }
+
+        function handleOptionClick(choice) {
+            if (optionLocked) return;
+            optionLocked = true;
+            clearInterval(qTimer);
+
+            const item = activeQuestions[currentIdx];
+            const chosenBtn = document.getElementById(`opt-btn-${choice}`);
+            const rightBtn = document.getElementById(`opt-btn-${item.a}`);
+
+            ['A', 'B', 'C', 'D'].forEach(l => document.getElementById(`opt-btn-${l}`).disabled = true);
+            chosenBtn.classList.add('locked');
+
+            setTimeout(() => {
+                chosenBtn.classList.remove('locked');
+                if (choice === item.a) {
+                    chosenBtn.classList.add('correct');
+                    correctScore++;
+                    document.getElementById('q-score-correct').textContent = correctScore;
+                    playKBCEffect('correct');
+                    showArenaFeedback(true, "बिल्कुल सही जवाब!", item.e);
+                } else {
+                    chosenBtn.classList.add('wrong');
+                    rightBtn.classList.add('correct');
+                    playKBCEffect('wrong');
+                    showArenaFeedback(false, `गलत जवाब! सही उत्तर (${item.a}) है।`, item.e);
+                }
+            }, 400);
+        }
+
+        function showArenaFeedback(isRight, titleText, expText) {
+            const box = document.getElementById('arena-feedback-box');
+            const icon = document.getElementById('arena-feedback-icon');
+            const title = document.getElementById('arena-feedback-title');
+            const exp = document.getElementById('arena-feedback-exp');
+
+            icon.className = isRight
+                ? 'fa-solid fa-circle-check text-2xl text-green-400 mt-0.5'
+                : 'fa-solid fa-circle-xmark text-2xl text-red-400 mt-0.5';
+            title.className = isRight
+                ? 'font-bold text-sm sm:text-base text-green-400'
+                : 'font-bold text-sm sm:text-base text-red-400';
+            title.textContent = titleText;
+            exp.textContent = expText;
+            box.classList.remove('hidden');
+        }
+
+        function nextKBCQuestion() {
+            currentIdx++;
+            if (currentIdx < activeQuestions.length) {
+                loadQuestionOnScreen();
+            } else {
+                endKBCQuiz();
+            }
+        }
+
+        function useLifeline5050() {
+            if (life5050Used || optionLocked) return;
+            life5050Used = true;
+            playKBCEffect('lifeline');
+            const b = document.getElementById('life-5050');
+            b.disabled = true;
+            b.classList.add('opacity-40', 'line-through');
+
+            const item = activeQuestions[currentIdx];
+            const wrongs = ['A', 'B', 'C', 'D'].filter(l => l !== item.a).sort(() => Math.random() - 0.5);
+            wrongs.slice(0, 2).forEach(l => {
+                document.getElementById(`opt-btn-${l}`).style.visibility = 'hidden';
+            });
+        }
+
+        function useLifelinePoll() {
+            if (lifePollUsed || optionLocked) return;
+            lifePollUsed = true;
+            playKBCEffect('lifeline');
+            const b = document.getElementById('life-poll');
+            b.disabled = true;
+            b.classList.add('opacity-40', 'line-through');
+
+            const item = activeQuestions[currentIdx];
+            const letters = ['A', 'B', 'C', 'D'];
+            let rem = 100;
+            const mainPct = Math.floor(Math.random() * 18) + 60;
+            rem -= mainPct;
+
+            const pctMap = {};
+            letters.forEach(l => {
+                if (l === item.a) pctMap[l] = mainPct;
+                else {
+                    const v = Math.floor(Math.random() * rem);
+                    pctMap[l] = v;
+                    rem -= v;
+                }
+            });
+            const other = letters.find(l => l !== item.a);
+            pctMap[other] += rem;
+
+            document.getElementById('audience-poll-bars').innerHTML = letters.map(l => `
+                <div class="bg-kbcNavy p-2 rounded-lg border border-blue-500/40">
+                    <div class="text-yellow-300 mb-1">${l}: ${pctMap[l]}%</div>
+                    <div class="w-full bg-blue-950 h-2 rounded overflow-hidden">
+                        <div class="bg-yellow-400 h-full" style="width:${pctMap[l]}%"></div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('audience-poll-box').classList.remove('hidden');
+        }
+
+        function useLifelineFlip() {
+            if (lifeFlipUsed || optionLocked || !flipBackupQuestion) return;
+            lifeFlipUsed = true;
+            playKBCEffect('lifeline');
+            const b = document.getElementById('life-flip');
+            b.disabled = true;
+            b.classList.add('opacity-40', 'line-through');
+
+            activeQuestions[currentIdx] = flipBackupQuestion;
+            loadQuestionOnScreen();
+        }
+
+        function endKBCQuiz() {
+            clearInterval(qTimer);
+            document.getElementById('quiz-arena').classList.add('hidden');
+            document.getElementById('quiz-result').classList.remove('hidden');
+
+            const total = activeQuestions.length;
+            const acc = Math.round((correctScore / total) * 100);
+            document.getElementById('result-chapter-label').textContent = document.getElementById('arena-chapter-title').textContent;
+            document.getElementById('res-correct').textContent = correctScore;
+            document.getElementById('res-total').textContent = total;
+            document.getElementById('res-accuracy').textContent = `${acc}%`;
+
+            const msg = document.getElementById('res-message');
+            if (acc >= 80) msg.textContent = "🌟 शानदार तैयारी! इस अध्याय पर आपकी पकड़ बहुत मजबूत है।";
+            else if (acc >= 50) msg.textContent = "👍 अच्छा प्रयास! कॉपी से एक बार फिर रिविज़न करें।";
+            else msg.textContent = "📚 इस अध्याय को कॉपी से दोबारा पढ़ें और फिर से प्रैक्टिस करें।";
+        }
+
+        function returnToQuizSetup() {
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('quiz-setup').classList.remove('hidden');
+        }
+
+        // -----------------------------------------------------------------
+        // 6. SLIDE 3: LOUD ALARM SYSTEM (DAY-SPECIFIC & DAILY)
+        // -----------------------------------------------------------------
+        let lastTriggeredStamp = "";
+
+        function getAlarmsDB() {
+            try {
+                return JSON.parse(localStorage.getItem('mp12_loud_alarms') || '[]');
+            } catch (e) {
+                return [];
+            }
+        }
+
+        function saveAlarmsDB(list) {
+            localStorage.setItem('mp12_loud_alarms', JSON.stringify(list));
+            renderAlarmsUI();
+        }
+
+        function createNewAlarm(e) {
+            e.preventDefault();
+            const time = document.getElementById('new-alarm-time').value;
+            const day = document.getElementById('new-alarm-day').value;
+            const label = document.getElementById('new-alarm-label').value.trim();
+            if (!time) return;
+
+            if ("Notification" in window && Notification.permission === "default") {
+                Notification.requestPermission();
+            }
+
+            const list = getAlarmsDB();
+            list.push({
+                id: Date.now(),
+                time,
+                day,
+                label: label || "पढ़ाई करने का समय हो गया है!",
+                active: true
+            });
+            saveAlarmsDB(list);
+            playKBCEffect('correct');
+        }
+
+        function toggleAlarmStatus(id) {
+            const list = getAlarmsDB().map(a => a.id === id ? { ...a, active: !a.active } : a);
+            saveAlarmsDB(list);
+        }
+
+        function deleteAlarmItem(id) {
+            const list = getAlarmsDB().filter(a => a.id !== id);
+            saveAlarmsDB(list);
+        }
+
+        function renderAlarmsUI() {
+            const list = getAlarmsDB();
+            const container = document.getElementById('saved-alarms-list');
+            const dot = document.getElementById('nav-alarm-indicator');
+
+            if (list.some(a => a.active)) dot.classList.remove('hidden');
+            else dot.classList.add('hidden');
+
+            if (list.length === 0) {
+                container.innerHTML = `<p class="text-xs text-blue-300 text-center py-4">अभी कोई अलार्म सेट नहीं है। ऊपर समय चुनकर अलार्म लगाएँ।</p>`;
+                return;
+            }
+
+            container.innerHTML = list.map(al => `
+                <div class="flex items-center justify-between p-3.5 rounded-2xl bg-kbcNavy border ${al.active ? 'border-yellow-400/70' : 'border-blue-900 opacity-60'}">
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-rajdhani font-bold text-2xl text-yellow-300">${formatTime12Hr(al.time)}</span>
+                            <span class="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-900 text-blue-200">${al.day === 'ALL' ? 'रोज़ाना' : al.day}</span>
+                        </div>
+                        <div class="text-xs text-blue-100 mt-0.5">${al.label}</div>
+                    </div>
+                    <div class="flex items-center gap-2.5">
+                        <button onclick="toggleAlarmStatus(${al.id})" class="px-3 py-1 rounded-full text-xs font-bold cursor-pointer ${al.active ? 'bg-green-600 text-white' : 'bg-gray-700 text-gray-300'}">
+                            ${al.active ? 'चालू' : 'बंद'}
+                        </button>
+                        <button onclick="deleteAlarmItem(${al.id})" class="p-2 text-red-400 hover:text-red-300 cursor-pointer">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function startLoudAlarmRing(alarmObj) {
+            document.getElementById('ring-modal-label').textContent = alarmObj.label;
+            document.getElementById('ring-modal-time').textContent = alarmObj.time === 'TEST' ? 'आवाज़ टेस्ट' : formatTime12Hr(alarmObj.time);
+            document.getElementById('loud-alarm-modal').classList.remove('hidden');
+
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("🔔 पढ़ाई का तेज़ अलार्म!", { body: alarmObj.label });
+            }
+
+            clearInterval(loudAlarmLoop);
+            playLoudSirenBurst();
+            loudAlarmLoop = setInterval(() => {
+                playLoudSirenBurst();
+            }, 1100);
+        }
+
+        function testLoudAlarm() {
+            startLoudAlarmRing({ time: "TEST", label: "यह आपके पढ़ाई अलार्म की तेज़ आवाज़ है!" });
+        }
+
+        function stopLoudAlarm() {
+            clearInterval(loudAlarmLoop);
+            document.getElementById('loud-alarm-modal').classList.add('hidden');
+        }
+
+        function snoozeLoudAlarm() {
+            stopLoudAlarm();
+            const future = new Date(Date.now() + 5 * 60000);
+            const hh = String(future.getHours()).padStart(2, '0');
+            const mm = String(future.getMinutes()).padStart(2, '0');
+            const list = getAlarmsDB();
+            list.push({
+                id: Date.now(),
+                time: `${hh}:${mm}`,
+                day: 'ALL',
+                label: "स्नूज़ रिमाइंडर: पढ़ाई शुरू करें!",
+                active: true
+            });
+            saveAlarmsDB(list);
+        }
+
+        // -----------------------------------------------------------------
+        // 7. MASTER CLOCK & ALARM CHECKER
+        // -----------------------------------------------------------------
+        function tickMasterClock() {
+            const now = new Date();
+            const hh = String(now.getHours()).padStart(2, '0');
+            const mm = String(now.getMinutes()).padStart(2, '0');
+            const ss = String(now.getSeconds()).padStart(2, '0');
+            const hhmmss = `${hh}:${mm}:${ss}`;
+            const hhmm = `${hh}:${mm}`;
+            const todayHindi = getTodayHindiDay();
+
+            document.getElementById('header-live-clock').textContent = hhmmss;
+            document.getElementById('alarm-slide-clock').textContent = hhmmss;
+            document.getElementById('header-today-badge').textContent = `आज: ${todayHindi}`;
+
+            const dateStr = now.toLocaleDateString('hi-IN', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('alarm-slide-date').textContent = dateStr;
+
+            // Check matching alarm at 00 seconds
+            const currentStamp = `${todayHindi}-${hhmm}`;
+            if (ss === "00" && lastTriggeredStamp !== currentStamp) {
+                const alarms = getAlarmsDB();
+                const hit = alarms.find(a => a.active && a.time === hhmm && (a.day === 'ALL' || a.day === todayHindi));
+                if (hit) {
+                    lastTriggeredStamp = currentStamp;
+                    startLoudAlarmRing(hit);
+                }
+            }
+        }
+
+        // -----------------------------------------------------------------
+        // 8. APP INITIALIZATION
+        // -----------------------------------------------------------------
+        window.addEventListener('DOMContentLoaded', () => {
+            selectedRoutineDay = getTodayHindiDay();
+            renderDaySelectorStrip();
+            renderSelectedDaySchedule();
+            renderSyllabusList('physics');
+            populateQuizChapters();
+            renderAlarmsUI();
+            tickMasterClock();
+            setInterval(tickMasterClock, 1000);
+        });
+    </script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function () {
+    navigator.serviceWorker.register('./sw.js').catch(function (err) {
+      console.warn('Service worker registration failed:', err);
+    });
+  });
+}
+</script>
+
+</body>
+</html>
